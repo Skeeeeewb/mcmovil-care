@@ -17,12 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.mcmovilcare.ui.theme.MCmovilCareTheme
-
+import androidx.compose.foundation.clickable
 
 @Composable
 fun AtencionesScreen(
     atenciones: List<Atencion>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onAtencionClick: (Atencion) -> Unit = {}
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -37,15 +38,23 @@ fun AtencionesScreen(
         }
 
         items(atenciones, key = { atencion -> atencion.id }) { atencion ->
-            TarjetaAtencion(atencion = atencion)
+            TarjetaAtencion(
+                atencion = atencion,
+                onClick = { onAtencionClick(atencion) }
+            )
         }
     }
 }
 
 @Composable
-fun TarjetaAtencion(atencion: Atencion) {
+fun TarjetaAtencion(
+    atencion: Atencion,
+    onClick: () -> Unit = {}
+) {
     Card(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
