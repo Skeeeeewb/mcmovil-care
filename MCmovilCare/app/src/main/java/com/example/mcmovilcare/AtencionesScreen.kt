@@ -15,6 +15,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.mcmovilcare.ui.theme.MCmovilCareTheme
+
 
 @Composable
 fun AtencionesScreen(
@@ -58,5 +61,39 @@ fun TarjetaAtencion(atencion: Atencion) {
             Text(text = "Diagnóstico: ${atencion.diagnostico}")
             Text(text = "Cotización: $${atencion.cotizacion}")
         }
+
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun AtencionesPreview() {
+    val atencionesEjemplo = listOf(
+        Atencion(
+            id = 1001,
+            equipoId = 1,
+            estado = "En diagnóstico",
+            diagnostico = "Posible falla de almacenamiento",
+            cotizacion = 45000
+        ),
+        Atencion(
+            id = 1002,
+            equipoId = 2,
+            estado = "En reparación",
+            diagnostico = "Cambio de pantalla",
+            cotizacion = 85000
+        ),
+        Atencion(
+            id = 1003,
+            equipoId = 3,
+            estado = "Finalizada",
+            diagnostico = "Revisión general completada",
+            cotizacion = 20000
+        )
+    )
+
+    MCmovilCareTheme {
+        AtencionesScreen(atenciones = atencionesEjemplo)
+    }
+}
+
