@@ -7,41 +7,50 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.mcmovilcare.ui.theme.MCmovilCareTheme
 
 class MainActivity : ComponentActivity() {
+
+    private val equiposDeEjemplo = listOf(
+        Equipo(
+            id = 1,
+            nombre = "Notebook personal",
+            marca = "Lenovo",
+            modelo = "IdeaPad 3",
+            estado = "En diagnóstico"
+        ),
+        Equipo(
+            id = 2,
+            nombre = "Teléfono",
+            marca = "Samsung",
+            modelo = "Galaxy A54",
+            estado = "En reparación"
+        ),
+        Equipo(
+            id = 3,
+            nombre = "Tablet",
+            marca = "Samsung",
+            modelo = "Galaxy Tab A8",
+            estado = "Disponible para retiro"
+        )
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             MCmovilCareTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
+                Scaffold(
+                    modifier = Modifier.fillMaxSize()
+                ) { innerPadding ->
+                    EquiposScreen(
+                        equipos = equiposDeEjemplo,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MCmovilCareTheme {
-        Greeting("Android")
     }
 }
