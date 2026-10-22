@@ -8,9 +8,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.example.mcmovilcare.ui.theme.MCmovilCareTheme
 
@@ -46,36 +43,14 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             MCmovilCareTheme {
-
-                var equipoSeleccionado by
-                androidx.compose.runtime.remember {
-                    mutableStateOf<Equipo?>(null)
-                }
-
                 Scaffold(
                     modifier = Modifier.fillMaxSize()
                 ) { innerPadding ->
 
-                    if (equipoSeleccionado == null) {
-
-                        EquiposScreen(
-                            equipos = equiposDeEjemplo,
-                            onEquipoClick = { equipo ->
-                                equipoSeleccionado = equipo
-                            },
-                            modifier = Modifier.padding(innerPadding)
-                        )
-
-                    } else {
-
-                        DetalleEquipoScreen(
-                            equipo = equipoSeleccionado!!,
-                            onVolver = {
-                                equipoSeleccionado = null
-                            },
-                            modifier = Modifier.padding(innerPadding)
-                        )
-                    }
+                    NavegacionApp(
+                        equipos = equiposDeEjemplo,
+                        modifier = Modifier.padding(innerPadding)
+                    )
                 }
             }
         }
