@@ -1,3 +1,4 @@
+
 package com.example.mcmovilcare
 
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun EquiposScreen(
     equipos: List<Equipo>,
+    onEquipoClick: (Equipo) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -40,14 +42,21 @@ fun EquiposScreen(
         }
 
         items(equipos, key = { equipo -> equipo.id }) { equipo ->
-            TarjetaEquipo(equipo = equipo)
+            TarjetaEquipo(
+                equipo = equipo,
+                onClick = { onEquipoClick(equipo) }
+            )
         }
     }
 }
 
 @Composable
-fun TarjetaEquipo(equipo: Equipo) {
+fun TarjetaEquipo(
+    equipo: Equipo,
+    onClick: () -> Unit
+) {
     Card(
+        onClick = onClick,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
