@@ -14,11 +14,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mcmovilcare.ui.theme.MCmovilCareTheme
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
 
 @Composable
 fun DetalleAtencionScreen(
     atencion: Atencion,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onAceptar: () -> Unit = {},
+    onRechazar: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -54,9 +59,28 @@ fun DetalleAtencionScreen(
 
                 Text(
                     text = "Cotización",
+
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(text = "$${atencion.cotizacion}")
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Button(
+                        onClick = onAceptar,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Aceptar")
+                    }
+
+                    OutlinedButton(
+                        onClick = onRechazar,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Rechazar")
+                    }
+                }
             }
         }
     }
