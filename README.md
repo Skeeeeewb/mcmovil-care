@@ -1,198 +1,141 @@
-\# MCmovil Care
+# MCmovil Care
 
+Aplicación Android desarrollada para la asignatura **Desarrollo de Aplicaciones Móviles (DSY1105)** de Duoc UC, como parte de la Evaluación Parcial 2.
 
+## Integrantes
 
-Aplicación Android desarrollada para la asignatura \*\*Desarrollo de Aplicaciones Móviles (DSY1105)\*\*, como parte de la Evaluación Parcial 2.
+- Matías Muñoz
+- Moisés Pontigo
 
+## Descripción del proyecto
 
+MCmovil Care es una aplicación móvil académica orientada a clientes de un servicio técnico de dispositivos electrónicos.
 
-\## Integrantes
-
-
-
-\- Matías Muñoz
-
-\- Moisés Pontigo
-
-
-
-\## Descripción
-
-
-
-MCmovil Care es una aplicación académica orientada a clientes de un servicio técnico. Permite consultar equipos, registrar solicitudes y realizar seguimiento de atenciones y cotizaciones.
-
-
+Permite consultar equipos registrados, crear solicitudes de atención, revisar diagnósticos y gestionar decisiones sobre cotizaciones.
 
 El proyecto utiliza información ficticia y no se conecta al sistema productivo Gestioo.
 
+## Tecnologías utilizadas
 
+- Kotlin
+- Android Studio
+- Jetpack Compose
+- Material Design 3
+- Arquitectura MVVM
+- ViewModel y StateFlow
+- Room Database 2.8.4 (SQLite)
+- Kotlin Symbol Processing (KSP)
+- Navigation Compose
+- Activity Result API
+- Git y GitHub
+- Trello para planificación colaborativa
 
-\## Tecnologías
+## Funcionalidades implementadas
 
+### Gestión de equipos y solicitudes — Matías Muñoz
 
+- Visualización de un listado de equipos ficticios.
+- Consulta de información individual de cada equipo.
+- Navegación entre equipos, detalles y solicitudes.
+- Formulario para registrar solicitudes de atención.
+- Validaciones y mensajes visuales ante datos incorrectos.
+- Gestión del estado mediante ViewModel y StateFlow.
+- Almacenamiento local de solicitudes con Room.
+- Consulta de solicitudes registradas.
+- Captura de fotografías utilizando la cámara del dispositivo.
+- Visualización y eliminación de la vista previa de la fotografía capturada.
 
-\- Kotlin
+### Seguimiento de atenciones — Moisés Pontigo
 
-\- Jetpack Compose
+- Listado de atenciones ficticias.
+- Visualización del estado, diagnóstico y cotización de cada atención.
+- Aceptación y rechazo de cotizaciones.
+- Gestión de decisiones mediante ViewModel y StateFlow.
+- Persistencia de decisiones con Room mediante Repository y DAO.
+- Recuperación de decisiones al cerrar y volver a abrir la aplicación.
+- Selección de fotografías desde la galería de Android.
+- Visualización de imágenes seleccionadas como evidencias temporales.
+- Animación para mostrar y ocultar el diagnóstico utilizando AnimatedVisibility.
 
-\- Material Design 3
+## Persistencia local
 
-\- Arquitectura MVVM
+La aplicación utiliza **Room Database** sobre SQLite.
 
-\- ViewModel y StateFlow
+La base de datos se denomina `mcmovil_care.db` y centraliza el almacenamiento local de solicitudes y decisiones de cotización.
 
-\- Navegación con NavController y NavHost
+Los componentes principales son:
 
-\- Git y GitHub
+- `AppDatabase.kt`: configura y proporciona acceso a Room.
+- `SolicitudEntity.kt` y `SolicitudDao.kt`: representan y administran las solicitudes.
+- `DecisionCotizacionEntity.kt` y `DecisionCotizacionDao.kt`: representan y administran las decisiones de cotización.
+- `DecisionCotizacionRepository.kt`: conecta la lógica del módulo de atenciones con el DAO.
+- `AtencionesViewModel.kt`: gestiona la actualización y recuperación de las decisiones.
 
+La persistencia se ha probado cerrando y volviendo a abrir la aplicación.
 
+Las fotografías capturadas y seleccionadas se utilizan como vistas previas temporales; no se almacenan permanentemente como parte de las solicitudes o atenciones.
 
-La persistencia con Room se encuentra en proceso de integración.
+## Recursos nativos y animaciones
 
+Se integraron dos recursos nativos del dispositivo:
 
+1. **Cámara:** captura de fotografías y visualización del resultado.
+2. **Galería:** selección y visualización de imágenes existentes.
 
-\## Funcionalidades
+También se incorporó una animación mediante `AnimatedVisibility`, con transiciones para mostrar y ocultar el diagnóstico de una atención.
 
+## Requisitos para ejecutar
 
+- Android Studio.
+- SDK de Android compatible con el proyecto.
+- Emulador o dispositivo con Android 8.0 (API 26) o superior.
+- Conexión a Internet para descargar dependencias durante la configuración inicial.
 
-\### Equipos y solicitudes — Matías
+## Instrucciones de ejecución
 
+1. Clonar el repositorio:
 
+   `git clone https://github.com/Skeeeeewb/mcmovil-care.git`
 
-\- Listado de equipos ficticios.
+2. Abrir Android Studio.
+3. Seleccionar **Open** y abrir la carpeta `MCmovilCare`.
+4. Esperar a que finalice la sincronización de Gradle.
+5. Seleccionar un emulador compatible.
+6. Elegir la configuración `app` y presionar **Run**.
+7. Desde el inicio de la aplicación, acceder a **Mis equipos** o **Mis atenciones**.
 
-\- Consulta del detalle de un equipo.
+Para comprobar la persistencia, se puede registrar una solicitud o aceptar/rechazar una cotización, cerrar la aplicación y volver a abrirla.
 
-\- Navegación entre equipos, detalle y solicitudes.
+## Organización del proyecto
 
-\- Formulario de solicitud de atención.
-
-\- Validaciones de descripción.
-
-\- Gestión del formulario mediante ViewModel y StateFlow.
-
-
-
-\### Seguimiento de atenciones — Moisés
-
-
-
-\- Listado de atenciones ficticias.
-
-\- Visualización del estado y diagnóstico.
-
-\- Consulta de cotizaciones.
-
-\- Aceptación y rechazo de cotizaciones mediante ViewModel y StateFlow.
-
-\- Selección de imágenes desde la galería de Android.
-
-\- Visualización de evidencias fotográficas.
-
-\- Animación para mostrar y ocultar el diagnóstico.
-
-
-
-\## Funcionalidades pendientes de integración
-
-
-
-\- Persistencia local con Room para solicitudes y decisiones.
-
-\- Captura de fotografías mediante cámara.
-
-\- Pruebas finales de navegación y funcionamiento integrado.
-
-\- Confirmación del alcance de la API REST de prueba.
-
-
-
-\## Requisitos para ejecutar
-
-
-
-\- Android Studio.
-
-\- SDK de Android correspondiente al proyecto.
-
-\- Emulador Android compatible con API 26 o superior.
-
-\- Conexión a Internet para descargar dependencias cuando sea necesario.
-
-
-
-\## Instrucciones de ejecución
-
-
-
-1\. Clonar el repositorio:
-
-
-
-&#x20;  `git clone https://github.com/Skeeeeewb/mcmovil-care.git`
-
-
-
-2\. Abrir Android Studio.
-
-
-
-3\. Seleccionar \*\*Open\*\* y abrir la carpeta `MCmovilCare`.
-
-
-
-4\. Permitir la sincronización de Gradle.
-
-
-
-5\. Seleccionar un emulador Android.
-
-
-
-6\. Ejecutar la configuración `app` utilizando \*\*Run\*\*.
-
-
-
-\## Organización del proyecto
-
-
-
-El código de la aplicación se encuentra en:
-
-
+El código principal se encuentra en:
 
 `MCmovilCare/app/src/main/java/com/example/mcmovilcare/`
 
+La implementación separa responsabilidades mediante clases de modelos, pantallas Compose, ViewModels, Repository, entidades y DAO de Room.
 
+La navegación se administra mediante `NavegacionApp.kt`.
 
-Los modelos representan los datos de equipos, solicitudes y atenciones. Las pantallas se implementan con Jetpack Compose y los ViewModel gestionan el estado y la lógica correspondiente.
+## Trabajo colaborativo
 
+El proyecto se desarrolló utilizando GitHub y Trello para distribuir tareas, registrar avances e integrar los aportes de ambos estudiantes.
 
+Ramas utilizadas:
 
-\## Control de versiones
+- `matias/equipos`
+- `moises/seguimiento-atenciones`
+- `integracion/ev2`
 
+Repositorio:
 
+https://github.com/Skeeeeewb/mcmovil-care
 
-El desarrollo se realiza mediante ramas de Git, conservando los aportes individuales de ambos integrantes.
+La planificación del desarrollo y sus responsables se encuentran registrados en el tablero de Trello del equipo.
 
+## Consideraciones
 
+Este proyecto tiene fines exclusivamente académicos.
 
-\- `matias/equipos`
+Los equipos, diagnósticos y cotizaciones de demostración son ficticios. Las solicitudes y decisiones almacenadas localmente corresponden a datos de prueba.
 
-\- `moises/seguimiento-atenciones`
-
-\- `integracion/ev2`
-
-
-
-Las funcionalidades se integran y prueban antes de publicarse en la rama principal.
-
-
-
-\## Consideraciones
-
-
-
-Este proyecto tiene fines exclusivamente académicos. Los equipos, diagnósticos, solicitudes y cotizaciones presentados son ficticios.
-
+No se utiliza información real del sistema productivo Gestioo.
