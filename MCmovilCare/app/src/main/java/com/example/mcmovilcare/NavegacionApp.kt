@@ -26,7 +26,7 @@ fun NavegacionApp(
 ) {
     val navController = rememberNavController()
 
-    // Atenciones ficticias del módulo de Moisés
+    // Atenciones de demostración del módulo de Moisés
     val atenciones = listOf(
         Atencion(
             id = 1001,
@@ -110,7 +110,9 @@ fun NavegacionApp(
                 EquiposScreen(
                     equipos = equipos,
                     onEquipoClick = { equipo ->
-                        navController.navigate("detalle/${equipo.id}")
+                        navController.navigate(
+                            "detalle/${equipo.id}"
+                        )
                     }
                 )
             }
@@ -148,7 +150,7 @@ fun NavegacionApp(
             }
         }
 
-        // Nueva solicitud
+        // Nueva solicitud conectada a Room
         composable(
             route = "solicitud/{equipoId}",
             arguments = listOf(
@@ -168,11 +170,6 @@ fun NavegacionApp(
             if (equipo != null) {
                 SolicitudScreen(
                     equipo = equipo,
-                    onGuardar = { descripcion ->
-                        println(
-                            "Solicitud para ${equipo.nombre}: $descripcion"
-                        )
-                    },
                     onVolver = {
                         navController.popBackStack()
                     }
