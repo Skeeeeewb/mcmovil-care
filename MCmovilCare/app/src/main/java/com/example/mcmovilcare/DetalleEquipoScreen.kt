@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.dp
 fun DetalleEquipoScreen(
     equipo: Equipo,
     onVolver: () -> Unit,
+    onSolicitarAtencion: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -54,10 +56,17 @@ fun DetalleEquipoScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Button(
+            onClick = onSolicitarAtencion,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Solicitar atención")
+        }
+
+        OutlinedButton(
             onClick = onVolver,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "Volver a mis equipos")
+            Text("Volver a mis equipos")
         }
     }
 }
