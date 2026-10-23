@@ -30,6 +30,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mcmovilcare.ui.theme.MCmovilCareTheme
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 
 @Composable
 fun DetalleAtencionScreen(
@@ -42,6 +47,10 @@ fun DetalleAtencionScreen(
     // Guarda temporalmente la imagen seleccionada.
     var imagenUri by remember {
         mutableStateOf<Uri?>(null)
+    }
+
+    var mostrarDiagnostico by remember {
+        mutableStateOf(true)
     }
 
     val context = LocalContext.current
@@ -83,12 +92,37 @@ fun DetalleAtencionScreen(
                 Text(text = "Equipo ID: ${atencion.equipoId}")
                 Text(text = "Estado: ${atencion.estado}")
 
-                Text(
-                    text = "Diagnóstico",
-                    style = MaterialTheme.typography.titleMedium
-                )
 
-                Text(text = atencion.diagnostico)
+                Button(
+                    onClick = {
+                        mostrarDiagnostico = !mostrarDiagnostico
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        if (mostrarDiagnostico) {
+                            "Ocultar diagnóstico"
+                        } else {
+                            "Mostrar diagnóstico"
+                        }
+                    )
+                }
+
+                AnimatedVisibility(
+                    visible = mostrarDiagnostico,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically()
+                ) {
+                    Column {
+                        Text(
+                            text = "Diagnóstico",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
+                        Text(text = atencion.diagnostico)
+                    }
+                }
+
 
                 Text(
                     text = "Cotización",
@@ -163,26 +197,6 @@ fun DetalleAtencionScreen(
         }
     }
 }
-
-// Vista previa sencilla.
-@Preview(showBackground = true)
-@Composable
-fun DetalleAtencionPreview() {
-    val atencionEjemplo = Atencion(
-        id = 1001,
-        equipoId = 1,
-        estado = "En diagnóstico",
-        diagnostico = "Posible falla de almacenamiento",
-        cotizacion = 45000
-    )
-
-    MCmovilCareTheme {
-        DetalleAtencionScreen(
-            atencion = atencionEjemplo
-        )
-    }
-}
-
 // Conecta la pantalla con el ViewModel.
 @Composable
 fun DetalleAtencionConEstado(
