@@ -18,6 +18,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun NavegacionApp(
@@ -25,6 +26,8 @@ fun NavegacionApp(
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
+
+    val atencionesViewModel: AtencionesViewModel = viewModel()
 
     // Atenciones de demostración del módulo de Moisés
     val atenciones = listOf(
@@ -234,18 +237,9 @@ fun NavegacionApp(
                         Text("Volver a mis atenciones")
                     }
 
-                    DetalleAtencionScreen(
+                    DetalleAtencionConEstado(
                         atencion = atencion,
-                        onAceptar = {
-                            println(
-                                "Cotización aceptada: ${atencion.id}"
-                            )
-                        },
-                        onRechazar = {
-                            println(
-                                "Cotización rechazada: ${atencion.id}"
-                            )
-                        }
+                        viewModel = atencionesViewModel
                     )
                 }
             }

@@ -35,6 +35,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
+import android.app.Application
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 fun DetalleAtencionScreen(
@@ -203,6 +206,9 @@ fun DetalleAtencionConEstado(
     atencion: Atencion,
     viewModel: AtencionesViewModel
 ) {
+    LaunchedEffect(atencion.id, viewModel) {
+        viewModel.observarDecision(atencion.id)
+    }
     val decisiones = viewModel.decisiones.collectAsState()
 
     DetalleAtencionScreen(
@@ -221,8 +227,12 @@ fun DetalleAtencionConEstado(
 @Preview(showBackground = true)
 @Composable
 fun DetalleInteractivoPreview() {
-    val viewModel = remember {
-        AtencionesViewModel()
+
+    val application =
+        LocalContext.current.applicationContext as Application
+
+    val viewModel = remember(application) {
+        AtencionesViewModel(application)
     }
 
     val atencionEjemplo = Atencion(
