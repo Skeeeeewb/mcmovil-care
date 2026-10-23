@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 
 
 @Composable
@@ -128,3 +129,27 @@ fun DetalleAtencionConEstado(
         }
     )
 }
+
+
+@Preview(showBackground = true)
+@Composable
+fun DetalleInteractivoPreview() {
+
+    val viewModel = remember { AtencionesViewModel() }
+
+    val atencionEjemplo = Atencion(
+        id = 1001,
+        equipoId = 1,
+        estado = "En diagnóstico",
+        diagnostico = "Posible falla de almacenamiento",
+        cotizacion = 45000
+    )
+
+    MCmovilCareTheme {
+        DetalleAtencionConEstado(
+            atencion = atencionEjemplo,
+            viewModel = viewModel
+        )
+    }
+}
+
