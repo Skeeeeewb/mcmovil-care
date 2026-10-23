@@ -17,11 +17,14 @@ import com.example.mcmovilcare.ui.theme.MCmovilCareTheme
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.runtime.collectAsState
+
 
 @Composable
 fun DetalleAtencionScreen(
     atencion: Atencion,
     modifier: Modifier = Modifier,
+    decisiones: Map<Int, DecisionCotizacion> = emptyMap(),
     onAceptar: () -> Unit = {},
     onRechazar: () -> Unit = {}
 ) {
@@ -43,6 +46,11 @@ fun DetalleAtencionScreen(
                 modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
+                val decision = decisiones[atencion.id] ?: DecisionCotizacion.PENDIENTE
+                Text(
+                    text = "Decisión: ${decision.name}",
+                    style = MaterialTheme.typography.titleMedium
+                )
                 Text(
                     text = "Atención N.º ${atencion.id}",
                     style = MaterialTheme.typography.titleLarge
@@ -100,4 +108,23 @@ fun DetalleAtencionPreview() {
     MCmovilCareTheme {
         DetalleAtencionScreen(atencion = atencionEjemplo)
     }
+}
+
+@Composable
+fun DetalleAtencionConEstado(
+    atencion: Atencion,
+    viewModel: AtencionesViewModel
+) {
+    val decisiones = viewModel.decisiones.collectAsState()
+
+    DetalleAtencionScreen(
+        atencion = atencion,
+        decisiones = decisiones.value,
+        onAceptar = {
+            viewModel.aceptarCotizacion(atencion.id)
+        },
+        onRechazar = {
+            viewModel.rechazarCotizacion(atencion.id)
+        }
+    )
 }
