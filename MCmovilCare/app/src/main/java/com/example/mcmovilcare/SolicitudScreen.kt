@@ -6,29 +6,31 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun SolicitudScreen(
     equipo: Equipo,
     onGuardar: (String) -> Unit,
     onVolver: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    solicitudViewModel: SolicitudViewModel = viewModel()
 ) {
-    var descripcion by rememberSaveable {
-        mutableStateOf("")
-    }
+    val uiState by solicitudViewModel.uiState.collectAsStateWithLifecycle()
 
     Column(
         modifier = modifier
@@ -59,8 +61,10 @@ fun SolicitudScreen(
         }
 
         OutlinedTextField(
-            value = descripcion,
-            onValueChange = { descripcion = it },
+            value = uiState.descripcion,
+            onValueChange = {
+                solicitudViewModel.actualizarDescripcion(it)
+            },
             label = {
                 Text("Describe el problema")
             },
@@ -69,19 +73,43 @@ fun SolicitudScreen(
             },
             modifier = Modifier.fillMaxWidth(),
             minLines = 3,
-            maxLines = 5
+            maxLines = 5,
+            isError = uiState.errorDescripcion != null,
+            supportingText = {
+                uiState.errorDescripcion?.let { error ->
+                    Text(
+                        text = error,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            trailingIcon = {
+                if (uiState.errorDescripcion != null) {
+                    Icon(
+                        imageVector = Icons.Filled.Warning,
+                        contentDescription = "Error de validación",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
         )
 
         Button(
             onClick = {
-                onGuardar(descripcion)
+                solicitudViewModel.validarSolicitud()
+
+                if (solicitudViewModel.uiState.value.solicitudValida) {
+                    onGuardar(
+                        solicitudViewModel.uiState.value.descripcion.trim()
+                    )
+                }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Registrar solicitud")
         }
 
-        Button(
+        OutlinedButton(
             onClick = onVolver,
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -89,4 +117,3 @@ fun SolicitudScreen(
         }
     }
 }
-
