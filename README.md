@@ -27,10 +27,33 @@ Aplicación móvil académica para un servicio técnico: consulta de equipos, re
 - Listado de equipos y atenciones obtenidos desde el microservicio, con respaldo local si el servicio no responde.
 - Detalle de equipo con marca, modelo y estado; muestra además marca, precio e imagen de un producto de DummyJSON.
 - Formulario de solicitud de atención con la validación original de la app (descripción de al menos 10 caracteres).
+- Cámara con permiso `CAMERA` solicitado en tiempo de ejecución y mensaje claro si se rechaza.
+- Galería con permiso de imágenes solicitado en tiempo de ejecución (`READ_MEDIA_IMAGES` en API 33+ y `READ_EXTERNAL_STORAGE` en API 32 o inferior).
+- Fotos capturadas o seleccionadas guardadas en almacenamiento interno; su ruta se persiste en Room, por lo que sobreviven al cierre de la app.
 - Solicitudes sincronizadas entre el microservicio y Room.
 - Detalle de atención con diagnóstico plegable, cotización, aceptación/rechazo y evidencia fotográfica desde galería.
 - Decisiones sincronizadas entre el microservicio y Room.
 - Navegación Compose y pantallas stateless: la UI observa `StateFlow` y envía eventos al ViewModel.
+
+### Flujo MVVM
+
+```mermaid
+flowchart LR
+    UI[Compose: pantallas stateless] -- UiEvent --> VM[ViewModel]
+    VM -- StateFlow --> UI
+    VM --> R[Repository]
+    R --> Room[(Room / archivos de foto)]
+    R --> Api[Retrofit: microservicio + DummyJSON]
+```
+
+### Esquema local (Room, versión 2)
+
+| Tabla | Columnas | Uso |
+| --- | --- | --- |
+| `solicitudes` | `id`, `equipoId`, `descripcion`, `estado`, `fotoRuta` | Solicitudes y ruta de la foto adjunta |
+| `decisiones_cotizacion` | `atencionId`, `decision`, `evidenciaRuta` | Decisión local y ruta de la evidencia |
+
+La migración `1 → 2` agrega `fotoRuta` y `evidenciaRuta` sin borrar los datos existentes.
 
 ### Microservicio
 
@@ -44,7 +67,7 @@ Aplicación móvil académica para un servicio técnico: consulta de equipos, re
 
 ### Microservicio propio
 
-Base: `http://10.0.2.2:8080/api` desde el emulador Android; `http://localhost:8080/api` desde el equipo.
+Base configurable en `MCmovilCare/gradle.properties` mediante `backendUrl`. Valor incluido: `http://192.168.1.92:8080/api/` (IP LAN de la PC para celular físico). Desde el equipo se verifica con `http://localhost:8080/api`; en emulador se puede cambiar el valor a `http://10.0.2.2:8080/api/`. Se genera en `BuildConfig.BACKEND_URL` y lo consume `ApiClient.kt`.
 
 | Método | Ruta | Uso en la app |
 | --- | --- | --- |
@@ -112,8 +135,9 @@ curl http://localhost:8080/api/equipos
 
 1. Clonar `https://github.com/Skeeeeewb/mcmovil-care.git`.
 2. Abrir la carpeta `MCmovilCare` con Android Studio y sincronizar Gradle.
-3. Ejecutar la configuración `app` en un emulador con API 26 o superior.
-4. El emulador apunta al microservicio mediante `http://10.0.2.2:8080/api/`. Si se usa dispositivo físico, reemplazar `10.0.2.2` por la IP de la máquina que ejecuta el backend.
+3. Ejecutar la configuración `app` en un emulador con API 26 o superior o instalar el APK firmado en el celular (`adb install -r MCmovilCare/app/release/mcmovil-care-release.apk`).
+4. Si el microservicio corre en la PC, el celular debe estar en la misma Wi‑Fi y `backendUrl` debe apuntar a la IP LAN de esa PC (valor incluido: `192.168.1.92`). Para emulador, cambiar el valor a `10.0.2.2`. Si no hay conexión, la app sigue funcionando con los datos de respaldo y Room.
+5. Al abrir cámara o galería, aceptar el permiso solicitado. Si se rechaza, la pantalla muestra un mensaje y no se cierra.
 
 ### 4. Pruebas y cobertura
 
@@ -127,7 +151,7 @@ cd MCmovilCare
 .\gradlew.bat :app:testDebugUnitTest :app:jacocoTestReport
 ```
 
-Resultados verificados: 14 pruebas del backend y 40 pruebas de la app. La cobertura de la lógica Android (ViewModels, repositorios y mappers) es de **82,5%** de instrucciones, medida por JaCoCo. El informe HTML queda en `MCmovilCare/app/build/reports/jacoco/jacocoTestReport/html/index.html`.
+Resultados verificados: 14 pruebas del backend y 48 pruebas de la app. La cobertura de la lógica Android (ViewModels, repositorios y mappers) es de **80,3%** de instrucciones, medida por JaCoCo; la cobertura del backend es de **47,9%**. El informe HTML queda en `MCmovilCare/app/build/reports/jacoco/jacocoTestReport/html/index.html`.
 
 ## APK firmado y keystore
 
@@ -148,6 +172,12 @@ Datos de firma acordados como valores de ejemplo:
 - Huella SHA-256 del certificado: `7f7a779c7df7d659e07222bf30ee5c9e4fd05038f38ba54634a329fcec6d5ac0`
 - Firma verificada con el esquema APK Signature Scheme v2
 
+Capturas de evidencia:
+
+| APK firmado | Keystore `.jks` |
+| --- | --- |
+| ![APK firmado](docs/evidencias/captura-apk-firmado.png) | ![Keystore](docs/evidencias/captura-keystore.png) |
+
 Reconstrucción:
 
 ```powershell
@@ -157,7 +187,14 @@ cd MCmovilCare
 
 ## Control de versiones y planificación
 
-Ramas de trabajo conservadas: `matias/equipos`, `moises/seguimiento-atenciones`, `integracion/ev2`, `integracion/ev3` e `integracion/ev4`. Los commits de esta entrega están en `integracion/ev4` y alternan la autoría entre ambos integrantes, con mensajes en español y compilación verificada antes de cada commit.
+Ramas de trabajo conservadas: `matias/equipos`, `moises/seguimiento-atenciones`, `integracion/ev2`, `integracion/ev3` e `integracion/ev4`. Los commits de esta entrega están en `integracion/ev4` e incluyen trabajos de ambos integrantes, con mensajes en español y compilación verificada antes de cada commit.
+
+Para revisar la autoría:
+
+```powershell
+git log integracion/ev4 --format='%h %an <%ae> %aI | %s' --author='Matías Muñoz'
+git log integracion/ev4 --format='%h %an <%ae> %aI | %s' --author='Moisés Pontigo'
+```
 
 Evidencia de Trello: tablero [MCmovil Care — EV2 DSY1105](https://trello.com/b/2MuVEHXh/mcmovil-care-ev2-dsy1105), lista **EV4 — Parcial 4** con 8 tareas completadas y distribuidas. Matías Muñoz: refactor MVVM, integración con el microservicio y Retrofit, API externa DummyJSON, APK firmado y keystore. Moisés Pontigo: microservicio Spring Boot con MySQL, corrección de decisiones de cotización, pruebas unitarias y cobertura, documentación técnica.
 

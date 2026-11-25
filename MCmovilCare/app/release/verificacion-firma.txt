@@ -1,5 +1,4 @@
-Comando: apksigner verify --verbose --print-certs mcmovil-care-release.apk
-
+﻿Comando: apksigner verify --verbose --print-certs mcmovil-care-release.apk
 Verifies
 Verified using v1 scheme (JAR signing): false
 Verified using v2 scheme (APK Signature Scheme v2): true
@@ -16,3 +15,4 @@ Signer #1 key algorithm: RSA
 Signer #1 key size (bits): 2048
 Signer #1 public key SHA-256 digest: 79ba01a338efb34222b1eec59de9a33dc20904366df9b218eb62e78f45bc9811
 Signer #1 public key SHA-1 digest: c356cba32a70328a8df74bb3b213b2ff4a4fc6a3
+Signer #1 public key MD5 digest: 8f0e3223e9f634fe143c5f9f9d8e5b14
