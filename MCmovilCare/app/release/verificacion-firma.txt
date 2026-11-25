@@ -1,0 +1,18 @@
+Comando: apksigner verify --verbose --print-certs mcmovil-care-release.apk
+
+Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): false
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: CN=MCmovil Care, OU=DSY1105, O=Duoc UC, L=Santiago, ST=Region Metropolitana, C=CL
+Signer #1 certificate SHA-256 digest: 7f7a779c7df7d659e07222bf30ee5c9e4fd05038f38ba54634a329fcec6d5ac0
+Signer #1 certificate SHA-1 digest: 4135eae85e9ba27bfcf4bb8f5e50a5bd787e592b
+Signer #1 certificate MD5 digest: 999c4d25deecf2a914bd7caf932536fa
+Signer #1 key algorithm: RSA
+Signer #1 key size (bits): 2048
+Signer #1 public key SHA-256 digest: 79ba01a338efb34222b1eec59de9a33dc20904366df9b218eb62e78f45bc9811
+Signer #1 public key SHA-1 digest: c356cba32a70328a8df74bb3b213b2ff4a4fc6a3
