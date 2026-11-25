@@ -1,6 +1,5 @@
 package com.example.mcmovilapi.service;
 
-import com.example.mcmovilapi.domain.Atencion;
 import com.example.mcmovilapi.domain.DecisionCotizacion;
 import com.example.mcmovilapi.domain.DecisionCotizacionEntity;
 import com.example.mcmovilapi.repository.AtencionRepository;
@@ -41,10 +40,8 @@ public class DecisionService {
     }
 
     private void validarAtencion(Integer atencionId) {
-        Atencion atencion = atencionRepository.findById(atencionId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Atención no encontrada"));
-        if (!"Disponible para retiro".equals(atencion.getEstado())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La atención no está disponible para retiro");
+        if (atencionId == null || !atencionRepository.existsById(atencionId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Atención no encontrada");
         }
     }
 }

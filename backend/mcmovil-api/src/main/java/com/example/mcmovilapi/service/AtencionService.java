@@ -1,7 +1,6 @@
 package com.example.mcmovilapi.service;
 
 import com.example.mcmovilapi.domain.Atencion;
-import com.example.mcmovilapi.domain.Equipo;
 import com.example.mcmovilapi.repository.AtencionRepository;
 import com.example.mcmovilapi.repository.EquipoRepository;
 import org.springframework.http.HttpStatus;
@@ -56,10 +55,8 @@ public class AtencionService {
     }
 
     private void validarEquipo(Integer equipoId) {
-        Equipo equipo = equipoRepository.findById(equipoId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Equipo no encontrado"));
-        if (!"Disponible para retiro".equals(equipo.getEstado())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El equipo no está disponible para retiro");
+        if (equipoId == null || !equipoRepository.existsById(equipoId)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Equipo no encontrado");
         }
     }
 }

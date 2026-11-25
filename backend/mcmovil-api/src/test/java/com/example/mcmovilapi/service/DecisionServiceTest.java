@@ -1,6 +1,5 @@
 package com.example.mcmovilapi.service;
 
-import com.example.mcmovilapi.domain.Atencion;
 import com.example.mcmovilapi.domain.DecisionCotizacionEntity;
 import com.example.mcmovilapi.repository.AtencionRepository;
 import com.example.mcmovilapi.repository.DecisionCotizacionRepository;
@@ -34,7 +33,7 @@ class DecisionServiceTest {
 
     @Test
     void obtenerSinDecisionDevuelvePendiente() {
-        when(atencionRepository.findById(1001)).thenReturn(Optional.of(atencion(1001)));
+        when(atencionRepository.existsById(1001)).thenReturn(true);
         when(repository.findById(1001)).thenReturn(Optional.empty());
 
         DecisionCotizacionEntity decision = service.obtener(1001);
@@ -44,7 +43,7 @@ class DecisionServiceTest {
 
     @Test
     void actualizarConDecisionInvalidaLanza400() {
-        when(atencionRepository.findById(1001)).thenReturn(Optional.of(atencion(1001)));
+        when(atencionRepository.existsById(1001)).thenReturn(true);
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
                 () -> service.actualizar(1001, "INVALIDA"));
@@ -54,7 +53,7 @@ class DecisionServiceTest {
 
     @Test
     void actualizarGuardaDecision() {
-        when(atencionRepository.findById(1001)).thenReturn(Optional.of(atencion(1001)));
+        when(atencionRepository.existsById(1001)).thenReturn(true);
         when(repository.save(any(DecisionCotizacionEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         DecisionCotizacionEntity decision = service.actualizar(1001, "ACEPTADA");
@@ -65,14 +64,10 @@ class DecisionServiceTest {
 
     @Test
     void obtenerAtencionInexistenteLanza404() {
-        when(atencionRepository.findById(99)).thenReturn(Optional.empty());
+        when(atencionRepository.existsById(99)).thenReturn(false);
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> service.obtener(99));
 
         assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
-    }
-
-    private Atencion atencion(Integer id) {
-        return new Atencion(id, 1, "Disponible para retiro", "Diagnóstico", 45000);
     }
 }
