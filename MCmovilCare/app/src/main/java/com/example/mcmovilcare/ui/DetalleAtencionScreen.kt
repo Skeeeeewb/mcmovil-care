@@ -1,7 +1,9 @@
 package com.example.mcmovilcare.ui
 
+import android.Manifest
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -45,6 +47,22 @@ fun DetalleAtencionScreen(
     ) { uri ->
         if (uri != null) {
             onEvent(DetalleAtencionUiEvent.ImagenSeleccionada(uri.toString()))
+        }
+    }
+
+    val permisoGaleria = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        Manifest.permission.READ_MEDIA_IMAGES
+    } else {
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    }
+
+    val permisoGaleriaLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { concedido ->
+        if (concedido) {
+            galeriaLauncher.launch("image/*")
+        } else {
+            onEvent(DetalleAtencionUiEvent.PermisoGaleriaDenegado)
         }
     }
 
@@ -139,10 +157,17 @@ fun DetalleAtencionScreen(
                     }
 
                     Button(
-                        onClick = { galeriaLauncher.launch("image/*") },
+                        onClick = { permisoGaleriaLauncher.launch(permisoGaleria) },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text("Seleccionar evidencia")
+                    }
+
+                    if (uiState.permisoGaleriaDenegado) {
+                        Text(
+                            text = "Permiso de galería denegado. Habilítalo en Ajustes para adjuntar la evidencia.",
+                            color = MaterialTheme.colorScheme.error
+                        )
                     }
 
                     uiState.imagenUri?.let { uriString ->

@@ -1,5 +1,6 @@
 package com.example.mcmovilcare.ui
 
+import android.Manifest
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -41,6 +42,16 @@ fun SolicitudScreen(
     ) { bitmap ->
         if (bitmap != null) {
             onEvent(SolicitudUiEvent.FotoCapturada(bitmap))
+        }
+    }
+
+    val permisoCamaraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { concedido ->
+        if (concedido) {
+            camaraLauncher.launch(null)
+        } else {
+            onEvent(SolicitudUiEvent.PermisoCamaraDenegado)
         }
     }
 
@@ -108,10 +119,17 @@ fun SolicitudScreen(
         )
 
         OutlinedButton(
-            onClick = { camaraLauncher.launch(null) },
+            onClick = { permisoCamaraLauncher.launch(Manifest.permission.CAMERA) },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Abrir cámara")
+        }
+
+        if (uiState.permisoCamaraDenegado) {
+            Text(
+                text = "Permiso de cámara denegado. Habilítalo en Ajustes para adjuntar la foto.",
+                color = MaterialTheme.colorScheme.error
+            )
         }
 
         uiState.foto?.let { bitmap ->

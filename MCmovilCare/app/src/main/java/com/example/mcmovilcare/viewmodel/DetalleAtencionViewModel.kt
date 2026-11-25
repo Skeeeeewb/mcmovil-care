@@ -18,12 +18,14 @@ data class DetalleAtencionUiState(
     val atencion: Atencion? = null,
     val decision: DecisionCotizacion = DecisionCotizacion.PENDIENTE,
     val mostrarDiagnostico: Boolean = true,
-    val imagenUri: String? = null
+    val imagenUri: String? = null,
+    val permisoGaleriaDenegado: Boolean = false
 )
 
 sealed interface DetalleAtencionUiEvent {
     data object AlternarDiagnostico : DetalleAtencionUiEvent
     data class ImagenSeleccionada(val uri: String) : DetalleAtencionUiEvent
+    data object PermisoGaleriaDenegado : DetalleAtencionUiEvent
     data object AceptarCotizacion : DetalleAtencionUiEvent
     data object RechazarCotizacion : DetalleAtencionUiEvent
 }
@@ -66,7 +68,11 @@ class DetalleAtencionViewModel(
             }
 
             is DetalleAtencionUiEvent.ImagenSeleccionada -> _uiState.update {
-                it.copy(imagenUri = event.uri)
+                it.copy(imagenUri = event.uri, permisoGaleriaDenegado = false)
+            }
+
+            DetalleAtencionUiEvent.PermisoGaleriaDenegado -> _uiState.update {
+                it.copy(permisoGaleriaDenegado = true)
             }
 
             DetalleAtencionUiEvent.AceptarCotizacion ->

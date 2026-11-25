@@ -28,6 +28,7 @@ data class SolicitudUiState(
     val guardando: Boolean = false,
     val mensaje: MensajeSolicitud? = null,
     val foto: Bitmap? = null,
+    val permisoCamaraDenegado: Boolean = false,
     val solicitudes: List<Solicitud> = emptyList()
 )
 
@@ -35,6 +36,7 @@ sealed interface SolicitudUiEvent {
     data class DescripcionCambiada(val texto: String) : SolicitudUiEvent
     data class FotoCapturada(val bitmap: Bitmap) : SolicitudUiEvent
     data object FotoEliminada : SolicitudUiEvent
+    data object PermisoCamaraDenegado : SolicitudUiEvent
     data object Guardar : SolicitudUiEvent
 }
 
@@ -86,11 +88,15 @@ class SolicitudViewModel(
             }
 
             is SolicitudUiEvent.FotoCapturada -> _uiState.update {
-                it.copy(foto = event.bitmap)
+                it.copy(foto = event.bitmap, permisoCamaraDenegado = false)
             }
 
             SolicitudUiEvent.FotoEliminada -> _uiState.update {
                 it.copy(foto = null)
+            }
+
+            SolicitudUiEvent.PermisoCamaraDenegado -> _uiState.update {
+                it.copy(permisoCamaraDenegado = true)
             }
 
             SolicitudUiEvent.Guardar -> guardarSolicitud()
