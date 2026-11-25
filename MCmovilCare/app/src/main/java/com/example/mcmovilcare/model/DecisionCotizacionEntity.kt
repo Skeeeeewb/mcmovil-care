@@ -1,5 +1,4 @@
-
-package com.example.mcmovilcare
+package com.example.mcmovilcare.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

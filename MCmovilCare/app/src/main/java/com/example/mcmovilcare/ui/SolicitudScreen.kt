@@ -1,5 +1,4 @@
-
-package com.example.mcmovilcare
+package com.example.mcmovilcare.ui
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,44 +21,27 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
-import android.graphics.Bitmap
+import com.example.mcmovilcare.viewmodel.MensajeSolicitud
+import com.example.mcmovilcare.viewmodel.SolicitudUiEvent
+import com.example.mcmovilcare.viewmodel.SolicitudUiState
 
 @Composable
 fun SolicitudScreen(
-    equipo: Equipo,
+    uiState: SolicitudUiState,
+    onEvent: (SolicitudUiEvent) -> Unit,
     onVolver: () -> Unit,
-    modifier: Modifier = Modifier,
-    solicitudViewModel: SolicitudViewModel = viewModel()
+    modifier: Modifier = Modifier
 ) {
-    val uiState by solicitudViewModel.uiState
-        .collectAsStateWithLifecycle()
-
-    // Imagen temporal tomada con la cámara
-    var fotoTomada by remember {
-        mutableStateOf<Bitmap?>(null)
-    }
-
-    // Abre la aplicación de cámara de Android
     val camaraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
     ) { bitmap ->
         if (bitmap != null) {
-            fotoTomada = bitmap
+            onEvent(SolicitudUiEvent.FotoCapturada(bitmap))
         }
-    }
-
-    val solicitudesDelEquipo = uiState.solicitudes.filter {
-        it.equipoId == equipo.id
     }
 
     Column(
@@ -69,40 +51,33 @@ fun SolicitudScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-
         Text(
             text = "Nueva solicitud",
             style = MaterialTheme.typography.headlineMedium
         )
 
-        Card(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(
-                    text = equipo.nombre,
-                    style = MaterialTheme.typography.titleLarge
-                )
+        uiState.equipo?.let { equipo ->
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = equipo.nombre,
+                        style = MaterialTheme.typography.titleLarge
+                    )
 
-                Text("Marca: ${equipo.marca}")
-                Text("Modelo: ${equipo.modelo}")
+                    Text("Marca: ${equipo.marca}")
+                    Text("Modelo: ${equipo.modelo}")
+                }
             }
         }
 
         OutlinedTextField(
             value = uiState.descripcion,
-            onValueChange = {
-                solicitudViewModel.actualizarDescripcion(it)
-            },
-            label = {
-                Text("Describe el problema")
-            },
-            placeholder = {
-                Text("Ej: Mi equipo no enciende")
-            },
+            onValueChange = { onEvent(SolicitudUiEvent.DescripcionCambiada(it)) },
+            label = { Text("Describe el problema") },
+            placeholder = { Text("Ej: Mi equipo no enciende") },
             modifier = Modifier.fillMaxWidth(),
             minLines = 3,
             maxLines = 5,
@@ -127,23 +102,19 @@ fun SolicitudScreen(
             }
         )
 
-        // Nueva funcionalidad: cámara
         Text(
             text = "Fotografía del problema",
             style = MaterialTheme.typography.titleMedium
         )
 
         OutlinedButton(
-            onClick = {
-                camaraLauncher.launch(null)
-            },
+            onClick = { camaraLauncher.launch(null) },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Abrir cámara")
         }
 
-        // Vista previa de la fotografía
-        fotoTomada?.let { bitmap ->
+        uiState.foto?.let { bitmap ->
             Image(
                 bitmap = bitmap.asImageBitmap(),
                 contentDescription = "Fotografía del equipo",
@@ -154,9 +125,7 @@ fun SolicitudScreen(
             )
 
             OutlinedButton(
-                onClick = {
-                    fotoTomada = null
-                },
+                onClick = { onEvent(SolicitudUiEvent.FotoEliminada) },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Eliminar fotografía")
@@ -164,27 +133,25 @@ fun SolicitudScreen(
         }
 
         Button(
-            onClick = {
-                solicitudViewModel.guardarSolicitud(equipo.id)
-            },
+            onClick = { onEvent(SolicitudUiEvent.Guardar) },
             enabled = !uiState.guardando,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                if (uiState.guardando) {
-                    "Guardando..."
-                } else {
-                    "Registrar solicitud"
-                }
+                if (uiState.guardando) "Guardando..." else "Registrar solicitud"
             )
         }
 
         uiState.mensaje?.let { mensaje ->
             Text(
-                text = mensaje,
-                color = if (
-                    mensaje == "Solicitud registrada correctamente"
-                ) {
+                text = when (mensaje) {
+                    MensajeSolicitud.Guardada ->
+                        "Solicitud registrada correctamente"
+
+                    MensajeSolicitud.Error ->
+                        "No se pudo guardar la solicitud"
+                },
+                color = if (mensaje == MensajeSolicitud.Guardada) {
                     MaterialTheme.colorScheme.primary
                 } else {
                     MaterialTheme.colorScheme.error
@@ -197,13 +164,11 @@ fun SolicitudScreen(
             style = MaterialTheme.typography.titleLarge
         )
 
-        if (solicitudesDelEquipo.isEmpty()) {
+        if (uiState.solicitudes.isEmpty()) {
             Text("Este equipo todavía no tiene solicitudes.")
         } else {
-            solicitudesDelEquipo.forEach { solicitud ->
-                Card(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
+            uiState.solicitudes.forEach { solicitud ->
+                Card(modifier = Modifier.fillMaxWidth()) {
                     Column(
                         modifier = Modifier.padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(6.dp)
@@ -214,7 +179,6 @@ fun SolicitudScreen(
                         )
 
                         Text(solicitud.descripcion)
-
                         Text("Estado: ${solicitud.estado}")
                     }
                 }

@@ -1,4 +1,4 @@
-package com.example.mcmovilcare
+package com.example.mcmovilcare.model
 
 data class Solicitud(
     val id: Int,
@@ -6,4 +6,3 @@ data class Solicitud(
     val descripcion: String,
     val estado: String = "Pendiente"
 )
-

@@ -1,4 +1,4 @@
-package com.example.mcmovilcare
+package com.example.mcmovilcare.model
 
 data class Atencion(
     val id: Int,

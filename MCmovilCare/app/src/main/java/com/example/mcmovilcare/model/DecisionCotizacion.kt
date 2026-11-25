@@ -1,5 +1,4 @@
-
-package com.example.mcmovilcare
+package com.example.mcmovilcare.model
 
 enum class DecisionCotizacion {
     PENDIENTE,

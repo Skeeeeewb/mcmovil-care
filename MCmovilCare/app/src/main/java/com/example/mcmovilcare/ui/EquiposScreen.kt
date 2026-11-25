@@ -1,5 +1,4 @@
-
-package com.example.mcmovilcare
+package com.example.mcmovilcare.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,11 +14,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.mcmovilcare.model.Equipo
+import com.example.mcmovilcare.viewmodel.EquiposUiState
 
 @Composable
 fun EquiposScreen(
-    equipos: List<Equipo>,
-    onEquipoClick: (Equipo) -> Unit,
+    uiState: EquiposUiState,
+    onEquipoClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -41,17 +42,17 @@ fun EquiposScreen(
             )
         }
 
-        items(equipos, key = { equipo -> equipo.id }) { equipo ->
+        items(uiState.equipos, key = { equipo -> equipo.id }) { equipo ->
             TarjetaEquipo(
                 equipo = equipo,
-                onClick = { onEquipoClick(equipo) }
+                onClick = { onEquipoClick(equipo.id) }
             )
         }
     }
 }
 
 @Composable
-fun TarjetaEquipo(
+private fun TarjetaEquipo(
     equipo: Equipo,
     onClick: () -> Unit
 ) {
