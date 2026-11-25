@@ -7,6 +7,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 import java.io.IOException
 
@@ -36,5 +37,21 @@ class EquipoRepositoryTest {
 
         assertEquals(3, equipos.size)
         assertEquals("Notebook personal", equipos[0].nombre)
+    }
+
+    @Test
+    fun `obtiene un equipo por id`() = runTest {
+        coEvery { api.obtenerEquipo(2) } returns EquipoDto(2, "Teléfono", "Samsung", "Galaxy A54", "En reparación")
+
+        val equipo = EquipoRepository(api).observarEquipo(2).first()
+
+        assertEquals("Galaxy A54", equipo?.modelo)
+    }
+
+    @Test
+    fun `usa respaldo si falla la consulta por id`() = runTest {
+        coEvery { api.obtenerEquipo(99) } throws IOException("Sin conexión")
+
+        assertNull(EquipoRepository(api).observarEquipo(99).first())
     }
 }

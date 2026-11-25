@@ -111,7 +111,12 @@ tasks.register<JacocoReport>("jacocoTestReport") {
 
     val buildDirPath = layout.buildDirectory.get().asFile
     classDirectories.setFrom(
-        files(fileTree("$buildDirPath/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes"))
+        files(fileTree("$buildDirPath/intermediates/built_in_kotlinc/debug/compileDebugKotlin/classes") {
+            include("com/example/mcmovilcare/repository/**/*.class")
+            include("com/example/mcmovilcare/viewmodel/**/*.class")
+            include("com/example/mcmovilcare/model/ApiDtoKt*.class")
+            include("com/example/mcmovilcare/model/ValidacionSolicitud*.class")
+        })
     )
     sourceDirectories.setFrom(files("src/main/java"))
     executionData.setFrom(fileTree(buildDirPath) { include("jacoco/*.exec") })
