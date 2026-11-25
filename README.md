@@ -159,7 +159,7 @@ cd MCmovilCare
 
 Ramas de trabajo conservadas: `matias/equipos`, `moises/seguimiento-atenciones`, `integracion/ev2`, `integracion/ev3` e `integracion/ev4`. Los commits de esta entrega están en `integracion/ev4` y alternan la autoría entre ambos integrantes, con mensajes en español y compilación verificada antes de cada commit.
 
-Evidencia de Trello: pendiente de enlace hasta completar el inicio de sesión en el navegador.
+Evidencia de Trello: tablero [MCmovil Care — EV2 DSY1105](https://trello.com/b/2MuVEHXh/mcmovil-care-ev2-dsy1105), lista **EV4 — Parcial 4** con 8 tareas completadas y distribuidas. Matías Muñoz: refactor MVVM, integración con el microservicio y Retrofit, API externa DummyJSON, APK firmado y keystore. Moisés Pontigo: microservicio Spring Boot con MySQL, corrección de decisiones de cotización, pruebas unitarias y cobertura, documentación técnica.
 
 ## Consideraciones
 
