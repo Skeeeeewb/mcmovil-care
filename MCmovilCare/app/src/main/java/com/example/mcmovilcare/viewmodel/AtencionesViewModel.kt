@@ -14,9 +14,9 @@ data class AtencionesUiState(
     val atenciones: List<Atencion> = emptyList()
 )
 
-class AtencionesViewModel : ViewModel() {
-
-    private val repository = AtencionRepository()
+class AtencionesViewModel(
+    private val repository: AtencionRepository = AtencionRepository()
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AtencionesUiState())
     val uiState: StateFlow<AtencionesUiState> = _uiState.asStateFlow()

@@ -14,9 +14,9 @@ data class EquiposUiState(
     val equipos: List<Equipo> = emptyList()
 )
 
-class EquiposViewModel : ViewModel() {
-
-    private val repository = EquipoRepository()
+class EquiposViewModel(
+    private val repository: EquipoRepository = EquipoRepository()
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(EquiposUiState())
     val uiState: StateFlow<EquiposUiState> = _uiState.asStateFlow()

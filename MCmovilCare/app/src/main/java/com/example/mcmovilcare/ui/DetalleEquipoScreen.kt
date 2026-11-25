@@ -14,7 +14,9 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.mcmovilcare.viewmodel.DetalleEquipoUiState
 
 @Composable
@@ -51,6 +53,30 @@ fun DetalleEquipoScreen(
                     Text(text = "Marca: ${equipo.marca}")
                     Text(text = "Modelo: ${equipo.modelo}")
                     Text(text = "Estado: ${equipo.estado}")
+                }
+            }
+
+            uiState.producto?.let { producto ->
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "Referencia externa (DummyJSON)",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        AsyncImage(
+                            model = producto.imagen,
+                            contentDescription = "Imagen de referencia de ${producto.titulo}",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(140.dp),
+                            contentScale = ContentScale.Fit
+                        )
+                        Text(text = "Marca: ${producto.marca}")
+                        Text(text = "Precio: $${producto.precio}")
+                    }
                 }
             }
 

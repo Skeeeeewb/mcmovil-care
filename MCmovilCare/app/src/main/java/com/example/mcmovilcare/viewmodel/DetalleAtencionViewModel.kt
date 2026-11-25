@@ -29,13 +29,12 @@ sealed interface DetalleAtencionUiEvent {
 }
 
 class DetalleAtencionViewModel(
-    application: Application
-) : AndroidViewModel(application) {
-
-    private val atencionRepository = AtencionRepository()
-    private val decisionRepository = DecisionCotizacionRepository(
+    application: Application,
+    private val atencionRepository: AtencionRepository = AtencionRepository(),
+    private val decisionRepository: DecisionCotizacionRepository = DecisionCotizacionRepository(
         AppDatabase.getInstance(application).decisionCotizacionDao()
     )
+) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow(DetalleAtencionUiState())
     val uiState: StateFlow<DetalleAtencionUiState> = _uiState.asStateFlow()
@@ -49,6 +48,9 @@ class DetalleAtencionViewModel(
             atencionRepository.observarAtencion(id).collect { atencion ->
                 _uiState.update { it.copy(atencion = atencion) }
             }
+        }
+        viewModelScope.launch {
+            decisionRepository.sincronizar(id)
         }
         viewModelScope.launch {
             decisionRepository.observarDecision(id).collect { decision ->

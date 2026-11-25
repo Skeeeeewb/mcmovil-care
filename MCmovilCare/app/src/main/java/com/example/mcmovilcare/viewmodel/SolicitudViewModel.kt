@@ -39,13 +39,12 @@ sealed interface SolicitudUiEvent {
 }
 
 class SolicitudViewModel(
-    application: Application
-) : AndroidViewModel(application) {
-
-    private val solicitudRepository = SolicitudRepository(
+    application: Application,
+    private val solicitudRepository: SolicitudRepository = SolicitudRepository(
         AppDatabase.getInstance(application).solicitudDao()
-    )
-    private val equipoRepository = EquipoRepository()
+    ),
+    private val equipoRepository: EquipoRepository = EquipoRepository()
+) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow(SolicitudUiState())
     val uiState: StateFlow<SolicitudUiState> = _uiState.asStateFlow()
@@ -54,6 +53,9 @@ class SolicitudViewModel(
     private var todasLasSolicitudes: List<Solicitud> = emptyList()
 
     init {
+        viewModelScope.launch {
+            solicitudRepository.sincronizar()
+        }
         viewModelScope.launch {
             solicitudRepository.observarSolicitudes().collect { solicitudes ->
                 todasLasSolicitudes = solicitudes
