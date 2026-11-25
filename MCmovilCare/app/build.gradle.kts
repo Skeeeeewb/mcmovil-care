@@ -54,6 +54,24 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
+    }
+}
+
+androidComponents {
+    onVariants { variant ->
+        variant.buildConfigFields?.put(
+            "BACKEND_URL",
+            com.android.build.api.variant.BuildConfigField(
+                type = "String",
+                value = "\"${
+                    providers.gradleProperty("backendUrl")
+                        .orElse("http://192.168.1.92:8080/api/")
+                        .get()
+                }\"",
+                comment = "URL base del microservicio MCMovil Care"
+            )
+        )
     }
 }
 

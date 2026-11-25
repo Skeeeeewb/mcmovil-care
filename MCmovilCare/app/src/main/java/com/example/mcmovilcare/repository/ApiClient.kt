@@ -1,5 +1,6 @@
 package com.example.mcmovilcare.repository
 
+import com.example.mcmovilcare.BuildConfig
 import com.example.mcmovilcare.model.AtencionDto
 import com.example.mcmovilcare.model.DecisionDto
 import com.example.mcmovilcare.model.DecisionRespuestaDto
@@ -16,7 +17,7 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 import java.util.concurrent.TimeUnit
 
-private const val BASE_URL = "http://10.0.2.2:8080/api/"
+private val BASE_URL = BuildConfig.BACKEND_URL
 private const val DUMMY_JSON_URL = "https://dummyjson.com/"
 
 interface McmovilApi {
