@@ -28,6 +28,10 @@ render.experimental.xml
 *.jks
 *.keystore
 
+# Entregable EV4: firma y APK versionados explícitamente
+!MCmovilCare/app/mcmovil-care.jks
+!MCmovilCare/app/release/mcmovil-care-release.apk
+
 # Google Services (e.g. APIs or Firebase)
 google-services.json
 

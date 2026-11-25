@@ -24,8 +24,18 @@ android {
             "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("mcmovil-care.jks")
+            storePassword = "mcmovil2026"
+            keyAlias = "mcmovilcare"
+            keyPassword = "mcmovil2026"
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
             optimization {
                 enable = true
                 packageScope = setOf(
