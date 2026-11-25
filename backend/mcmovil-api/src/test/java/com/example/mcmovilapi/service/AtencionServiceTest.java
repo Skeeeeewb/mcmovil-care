@@ -1,0 +1,66 @@
+package com.example.mcmovilapi.service;
+
+import com.example.mcmovilapi.domain.Atencion;
+import com.example.mcmovilapi.domain.Equipo;
+import com.example.mcmovilapi.repository.AtencionRepository;
+import com.example.mcmovilapi.repository.EquipoRepository;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+class AtencionServiceTest {
+
+    @Mock
+    private AtencionRepository repository;
+
+    @Mock
+    private EquipoRepository equipoRepository;
+
+    @InjectMocks
+    private AtencionService service;
+
+    @Test
+    void crearSinEquipoLanza400() {
+        when(equipoRepository.findById(1)).thenReturn(Optional.empty());
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> service.crear(new Atencion(null, 1, "En diagnóstico", "Prueba", 1000)));
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+    }
+
+    @Test
+    void crearConEquipoNoDisponibleLanza400() {
+        when(equipoRepository.findById(1)).thenReturn(Optional.of(new Equipo(1, "a", "b", "c", "En reparación")));
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> service.crear(new Atencion(null, 1, "En diagnóstico", "Prueba", 1000)));
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+    }
+
+    @Test
+    void crearValidaYGuarda() {
+        when(equipoRepository.findById(1)).thenReturn(Optional.of(new Equipo(1, "a", "b", "c", "Disponible para retiro")));
+        when(repository.save(any(Atencion.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        Atencion atencion = new Atencion(7, 1, "En diagnóstico", "Prueba válida", 1000);
+
+        Atencion guardada = service.crear(atencion);
+
+        assertEquals(null, guardada.getId());
+        verify(repository).save(atencion);
+    }
+}
