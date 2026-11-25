@@ -51,8 +51,36 @@ class DecisionCotizacionRepositoryTest {
     }
 
     @Test
+    fun `observa la ruta de evidencia guardada`() = runTest {
+        coEvery { dao.observarDecision(1001) } returns flowOf(
+            DecisionCotizacionEntity(1001, "ACEPTADA", "/datos/evidencia.jpg")
+        )
+
+        val ruta = DecisionCotizacionRepository(dao, api).observarEvidencia(1001).first()
+
+        assertEquals("/datos/evidencia.jpg", ruta)
+    }
+
+    @Test
+    fun `guarda la ruta de evidencia conservando la decision`() = runTest {
+        coEvery { dao.observarDecision(1001) } returns flowOf(
+            DecisionCotizacionEntity(1001, "ACEPTADA")
+        )
+        coEvery { dao.guardarDecision(any()) } returns Unit
+
+        DecisionCotizacionRepository(dao, api).guardarEvidencia(1001, "/datos/nueva.jpg")
+
+        coVerify {
+            dao.guardarDecision(match {
+                it.decision == "ACEPTADA" && it.evidenciaRuta == "/datos/nueva.jpg"
+            })
+        }
+    }
+
+    @Test
     fun `sincroniza decision del microservicio`() = runTest {
         coEvery { api.obtenerDecision(1001) } returns DecisionRespuestaDto(1001, "RECHAZADA")
+        coEvery { dao.observarDecision(1001) } returns flowOf(null)
         coEvery { dao.guardarDecision(any()) } returns Unit
 
         DecisionCotizacionRepository(dao, api).sincronizar(1001)
@@ -72,6 +100,7 @@ class DecisionCotizacionRepositoryTest {
     @Test
     fun `guarda decision remota y local`() = runTest {
         coEvery { api.guardarDecision(1001, any()) } returns DecisionRespuestaDto(1001, "ACEPTADA")
+        coEvery { dao.observarDecision(1001) } returns flowOf(null)
         coEvery { dao.guardarDecision(any()) } returns Unit
 
         DecisionCotizacionRepository(dao, api).guardarDecision(1001, DecisionCotizacion.ACEPTADA)
@@ -83,6 +112,7 @@ class DecisionCotizacionRepositoryTest {
     @Test
     fun `guarda localmente si falla el microservicio`() = runTest {
         coEvery { api.guardarDecision(1001, any()) } throws IOException("Sin conexión")
+        coEvery { dao.observarDecision(1001) } returns flowOf(null)
         coEvery { dao.guardarDecision(any()) } returns Unit
 
         DecisionCotizacionRepository(dao, api).guardarDecision(1001, DecisionCotizacion.RECHAZADA)

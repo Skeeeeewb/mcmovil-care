@@ -5,6 +5,7 @@ import com.example.mcmovilcare.model.Atencion
 import com.example.mcmovilcare.model.DecisionCotizacion
 import com.example.mcmovilcare.repository.AtencionRepository
 import com.example.mcmovilcare.repository.DecisionCotizacionRepository
+import com.example.mcmovilcare.repository.FotoRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -29,6 +30,7 @@ class DetalleAtencionViewModelTest {
     private val application = mockk<Application>(relaxed = true)
     private val atencionRepository = mockk<AtencionRepository>()
     private val decisionRepository = mockk<DecisionCotizacionRepository>()
+    private val fotoRepository = mockk<FotoRepository>(relaxed = true)
 
     @Before
     fun preparar() {
@@ -37,6 +39,8 @@ class DetalleAtencionViewModelTest {
             Atencion(1001, 1, "En diagnóstico", "Falla de almacenamiento", 45000)
         )
         every { decisionRepository.observarDecision(1001) } returns flowOf(DecisionCotizacion.PENDIENTE)
+        every { decisionRepository.observarEvidencia(1001) } returns flowOf(null)
+        every { fotoRepository.guardar(any<String>()) } returns null
         coEvery { decisionRepository.sincronizar(1001) } returns Unit
         coEvery { decisionRepository.guardarDecision(any(), any()) } returns Unit
     }
@@ -47,7 +51,12 @@ class DetalleAtencionViewModelTest {
     }
 
     private fun viewModel(): DetalleAtencionViewModel {
-        val viewModel = DetalleAtencionViewModel(application, atencionRepository, decisionRepository)
+        val viewModel = DetalleAtencionViewModel(
+            application,
+            atencionRepository,
+            decisionRepository,
+            fotoRepository
+        )
         viewModel.cargarAtencion(1001)
         return viewModel
     }

@@ -77,6 +77,29 @@ class SolicitudRepositoryTest {
     }
 
     @Test
+    fun `conserva la ruta de la foto al mapear entidades de Room`() = runTest {
+        coEvery { dao.obtenerTodas() } returns flowOf(
+            listOf(SolicitudEntity(4, 1, "Revisión", "Pendiente", "/datos/foto.jpg"))
+        )
+
+        val solicitudes = SolicitudRepository(dao, api).observarSolicitudes().first()
+
+        assertEquals("/datos/foto.jpg", solicitudes[0].fotoRuta)
+    }
+
+    @Test
+    fun `guarda la ruta de la foto en Room`() = runTest {
+        coEvery { api.crearSolicitud(any()) } throws IOException("Sin conexión")
+        coEvery { dao.insertar(any()) } returns 9L
+
+        SolicitudRepository(dao, api).guardar(
+            Solicitud(0, 1, "Con foto", fotoRuta = "/datos/foto.jpg")
+        )
+
+        coVerify { dao.insertar(match { it.fotoRuta == "/datos/foto.jpg" }) }
+    }
+
+    @Test
     fun `devuelve lista vacia cuando no hay solicitudes locales`() = runTest {
         coEvery { dao.obtenerTodas() } returns flowOf(emptyList())
 

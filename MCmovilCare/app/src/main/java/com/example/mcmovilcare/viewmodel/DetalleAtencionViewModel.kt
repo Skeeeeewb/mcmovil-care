@@ -8,6 +8,7 @@ import com.example.mcmovilcare.model.Atencion
 import com.example.mcmovilcare.model.DecisionCotizacion
 import com.example.mcmovilcare.repository.AtencionRepository
 import com.example.mcmovilcare.repository.DecisionCotizacionRepository
+import com.example.mcmovilcare.repository.FotoRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,7 +36,8 @@ class DetalleAtencionViewModel(
     private val atencionRepository: AtencionRepository = AtencionRepository(),
     private val decisionRepository: DecisionCotizacionRepository = DecisionCotizacionRepository(
         AppDatabase.getInstance(application).decisionCotizacionDao()
-    )
+    ),
+    private val fotoRepository: FotoRepository = FotoRepository(application)
 ) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow(DetalleAtencionUiState())
@@ -59,6 +61,13 @@ class DetalleAtencionViewModel(
                 _uiState.update { it.copy(decision = decision) }
             }
         }
+        viewModelScope.launch {
+            decisionRepository.observarEvidencia(id).collect { ruta ->
+                if (ruta != null && _uiState.value.imagenUri == null) {
+                    _uiState.update { it.copy(imagenUri = ruta) }
+                }
+            }
+        }
     }
 
     fun onEvent(event: DetalleAtencionUiEvent) {
@@ -67,8 +76,17 @@ class DetalleAtencionViewModel(
                 it.copy(mostrarDiagnostico = !it.mostrarDiagnostico)
             }
 
-            is DetalleAtencionUiEvent.ImagenSeleccionada -> _uiState.update {
-                it.copy(imagenUri = event.uri, permisoGaleriaDenegado = false)
+            is DetalleAtencionUiEvent.ImagenSeleccionada -> {
+                _uiState.update {
+                    it.copy(imagenUri = event.uri, permisoGaleriaDenegado = false)
+                }
+                viewModelScope.launch {
+                    val ruta = fotoRepository.guardar(event.uri)
+                    if (ruta != null) {
+                        decisionRepository.guardarEvidencia(atencionId, ruta)
+                        _uiState.update { it.copy(imagenUri = ruta) }
+                    }
+                }
             }
 
             DetalleAtencionUiEvent.PermisoGaleriaDenegado -> _uiState.update {

@@ -1,6 +1,7 @@
 package com.example.mcmovilcare.ui
 
 import android.Manifest
+import android.graphics.BitmapFactory
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -22,6 +23,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -198,6 +200,13 @@ fun SolicitudScreen(
 
                         Text(solicitud.descripcion)
                         Text("Estado: ${solicitud.estado}")
+
+                        solicitud.fotoRuta?.let { ruta ->
+                            FotoGuardada(
+                                ruta = ruta,
+                                contentDescription = "Fotografía de la solicitud #${solicitud.id}"
+                            )
+                        }
                     }
                 }
             }
@@ -209,5 +218,20 @@ fun SolicitudScreen(
         ) {
             Text("Volver")
         }
+    }
+}
+
+@Composable
+private fun FotoGuardada(ruta: String, contentDescription: String) {
+    val bitmap = remember(ruta) { BitmapFactory.decodeFile(ruta) }
+    bitmap?.let {
+        Image(
+            bitmap = it.asImageBitmap(),
+            contentDescription = contentDescription,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(140.dp),
+            contentScale = ContentScale.Fit
+        )
     }
 }

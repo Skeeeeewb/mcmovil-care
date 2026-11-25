@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import com.example.mcmovilcare.model.Equipo
 import com.example.mcmovilcare.model.Solicitud
 import com.example.mcmovilcare.repository.EquipoRepository
+import com.example.mcmovilcare.repository.FotoRepository
 import com.example.mcmovilcare.repository.SolicitudRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -31,6 +32,7 @@ class SolicitudViewModelTest {
     private val application = mockk<Application>(relaxed = true)
     private val solicitudRepository = mockk<SolicitudRepository>()
     private val equipoRepository = mockk<EquipoRepository>()
+    private val fotoRepository = mockk<FotoRepository>(relaxed = true)
 
     @Before
     fun preparar() {
@@ -54,7 +56,12 @@ class SolicitudViewModelTest {
     }
 
     private fun viewModel(): SolicitudViewModel {
-        val viewModel = SolicitudViewModel(application, solicitudRepository, equipoRepository)
+        val viewModel = SolicitudViewModel(
+            application,
+            solicitudRepository,
+            equipoRepository,
+            fotoRepository
+        )
         viewModel.cargarEquipo(1)
         return viewModel
     }

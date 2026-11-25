@@ -171,14 +171,17 @@ fun DetalleAtencionScreen(
                     }
 
                     uiState.imagenUri?.let { uriString ->
-                        val uri = Uri.parse(uriString)
-                        val bitmap = remember(uri) {
-                            runCatching {
-                                context.contentResolver
-                                    .openInputStream(uri)?.use { input ->
-                                        BitmapFactory.decodeStream(input)
-                                    }
-                            }.getOrNull()
+                        val bitmap = remember(uriString) {
+                            if (uriString.startsWith("content://") || uriString.startsWith("file://")) {
+                                runCatching {
+                                    context.contentResolver
+                                        .openInputStream(Uri.parse(uriString))?.use { input ->
+                                            BitmapFactory.decodeStream(input)
+                                        }
+                                }.getOrNull()
+                            } else {
+                                BitmapFactory.decodeFile(uriString)
+                            }
                         }
 
                         if (bitmap != null) {

@@ -7,5 +7,6 @@ import androidx.room.PrimaryKey
 data class DecisionCotizacionEntity(
     @PrimaryKey
     val atencionId: Int,
-    val decision: String
+    val decision: String,
+    val evidenciaRuta: String? = null
 )

@@ -6,6 +6,7 @@ import com.example.mcmovilcare.model.DecisionCotizacionEntity
 import com.example.mcmovilcare.model.DecisionDto
 import com.example.mcmovilcare.model.toDecision
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class DecisionCotizacionRepository(
@@ -17,6 +18,17 @@ class DecisionCotizacionRepository(
         dao.observarDecision(atencionId).map { entidad ->
             entidad?.toDomain() ?: DecisionCotizacion.PENDIENTE
         }
+
+    fun observarEvidencia(atencionId: Int): Flow<String?> =
+        dao.observarDecision(atencionId).map { it?.evidenciaRuta }
+
+    suspend fun guardarEvidencia(atencionId: Int, ruta: String) {
+        val actual = dao.observarDecision(atencionId).first()
+        dao.guardarDecision(
+            actual?.copy(evidenciaRuta = ruta)
+                ?: DecisionCotizacionEntity(atencionId, DecisionCotizacion.PENDIENTE.name, ruta)
+        )
+    }
 
     suspend fun sincronizar(atencionId: Int) {
         runCatching { api.obtenerDecision(atencionId) }
@@ -30,11 +42,10 @@ class DecisionCotizacionRepository(
     }
 
     private suspend fun guardarLocal(atencionId: Int, decision: DecisionCotizacion) {
+        val actual = dao.observarDecision(atencionId).first()
         dao.guardarDecision(
-            DecisionCotizacionEntity(
-                atencionId = atencionId,
-                decision = decision.name
-            )
+            actual?.copy(decision = decision.name)
+                ?: DecisionCotizacionEntity(atencionId, decision.name)
         )
     }
 

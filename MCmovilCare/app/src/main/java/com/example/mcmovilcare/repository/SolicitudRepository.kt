@@ -34,14 +34,16 @@ class SolicitudRepository(
         id = id,
         equipoId = equipoId,
         descripcion = descripcion,
-        estado = estado
+        estado = estado,
+        fotoRuta = fotoRuta
     )
 
     private fun Solicitud.toEntity(): SolicitudEntity = SolicitudEntity(
         id = id,
         equipoId = equipoId,
         descripcion = descripcion,
-        estado = estado
+        estado = estado,
+        fotoRuta = fotoRuta
     )
 
     private fun com.example.mcmovilcare.model.SolicitudDto.toEntity(): SolicitudEntity =

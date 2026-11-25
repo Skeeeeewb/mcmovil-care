@@ -9,6 +9,7 @@ import com.example.mcmovilcare.model.Equipo
 import com.example.mcmovilcare.model.Solicitud
 import com.example.mcmovilcare.model.ValidacionSolicitud
 import com.example.mcmovilcare.repository.EquipoRepository
+import com.example.mcmovilcare.repository.FotoRepository
 import com.example.mcmovilcare.repository.SolicitudRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,6 +29,7 @@ data class SolicitudUiState(
     val guardando: Boolean = false,
     val mensaje: MensajeSolicitud? = null,
     val foto: Bitmap? = null,
+    val fotoRuta: String? = null,
     val permisoCamaraDenegado: Boolean = false,
     val solicitudes: List<Solicitud> = emptyList()
 )
@@ -45,7 +47,8 @@ class SolicitudViewModel(
     private val solicitudRepository: SolicitudRepository = SolicitudRepository(
         AppDatabase.getInstance(application).solicitudDao()
     ),
-    private val equipoRepository: EquipoRepository = EquipoRepository()
+    private val equipoRepository: EquipoRepository = EquipoRepository(),
+    private val fotoRepository: FotoRepository = FotoRepository(application)
 ) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow(SolicitudUiState())
@@ -87,12 +90,20 @@ class SolicitudViewModel(
                 )
             }
 
-            is SolicitudUiEvent.FotoCapturada -> _uiState.update {
-                it.copy(foto = event.bitmap, permisoCamaraDenegado = false)
+            is SolicitudUiEvent.FotoCapturada -> {
+                val ruta = fotoRepository.guardar(event.bitmap)
+                _uiState.update {
+                    it.copy(
+                        foto = event.bitmap,
+                        fotoRuta = ruta,
+                        permisoCamaraDenegado = false
+                    )
+                }
             }
 
             SolicitudUiEvent.FotoEliminada -> _uiState.update {
-                it.copy(foto = null)
+                fotoRepository.eliminar(it.fotoRuta)
+                it.copy(foto = null, fotoRuta = null)
             }
 
             SolicitudUiEvent.PermisoCamaraDenegado -> _uiState.update {
@@ -124,7 +135,8 @@ class SolicitudViewModel(
                 id = 0,
                 equipoId = equipoId,
                 descripcion = estado.descripcion.trim(),
-                estado = "Pendiente"
+                estado = "Pendiente",
+                fotoRuta = estado.fotoRuta
             )
 
             runCatching { solicitudRepository.guardar(solicitud) }
@@ -134,6 +146,8 @@ class SolicitudViewModel(
                             descripcion = "",
                             errorDescripcion = null,
                             guardando = false,
+                            foto = null,
+                            fotoRuta = null,
                             mensaje = MensajeSolicitud.Guardada
                         )
                     }
