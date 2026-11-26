@@ -64,6 +64,13 @@ object ApiClient {
     private val cliente = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)
         .readTimeout(15, TimeUnit.SECONDS)
+        .addInterceptor { chain ->
+            chain.proceed(
+                chain.request().newBuilder()
+                    .header("Ngrok-Skip-Browser-Warning", "1")
+                    .build()
+            )
+        }
         .build()
 
     private fun retrofits(baseUrl: String): Retrofit = Retrofit.Builder()

@@ -67,7 +67,7 @@ La migración `1 → 2` agrega `fotoRuta` y `evidenciaRuta` sin borrar los datos
 
 ### Microservicio propio
 
-Base configurable en `MCmovilCare/gradle.properties` mediante `backendUrl`. Valor incluido: `http://192.168.1.82:8080/api/` (IP LAN detectada en la PC para celular físico). Desde el equipo se verifica con `http://localhost:8080/api`; en emulador se puede cambiar el valor a `http://10.0.2.2:8080/api/`. Se genera en `BuildConfig.BACKEND_URL` y lo consume `ApiClient.kt`.
+Base configurable en `MCmovilCare/gradle.properties` mediante `backendUrl`. Valor incluido: `https://dwindle-squishier-fetch.ngrok-free.dev/api/`, un dominio público fijo de ngrok que permite usar el celular con cualquier internet sin depender de la Wi‑Fi de la PC ni de escribir una IP. Desde la PC se verifica con `http://localhost:8080/api`. Se genera en `BuildConfig.BACKEND_URL` y lo consume `ApiClient.kt`, que envía el header `Ngrok-Skip-Browser-Warning: 1` para evitar la página de advertencia del plan gratis.
 
 | Método | Ruta | Uso en la app |
 | --- | --- | --- |
@@ -133,12 +133,26 @@ Verificación rápida:
 curl http://localhost:8080/api/equipos
 ```
 
+### Túnel público (ngrok)
+
+Con la cuenta ya autenticada, ejecutar en otra terminal:
+
+```powershell
+& 'C:\Users\moise\AppData\Local\Microsoft\WinGet\Packages\Ngrok.Ngrok_Microsoft.Winget.Source_8wekyb3d8bbwe\ngrok.exe' http 8080
+```
+
+El agente reutiliza el dominio fijo `https://dwindle-squishier-fetch.ngrok-free.dev`. Si la versión instalada es antigua, actualizar primero con `ngrok update`. Verificación desde cualquier red:
+
+```powershell
+Invoke-RestMethod -Uri 'https://dwindle-squishier-fetch.ngrok-free.dev/api/atenciones' -Headers @{ 'Ngrok-Skip-Browser-Warning' = '1' }
+```
+
 ### 3. Aplicación Android
 
 1. Clonar `https://github.com/Skeeeeewb/mcmovil-care.git`.
 2. Abrir la carpeta `MCmovilCare` con Android Studio y sincronizar Gradle.
 3. Ejecutar la configuración `app` en un emulador con API 26 o superior o instalar el APK firmado en el celular (`adb install -r MCmovilCare/app/release/mcmovil-care-release.apk`).
-4. Si el microservicio corre en la PC, el celular debe estar en la misma Wi‑Fi y `backendUrl` debe apuntar a la IP LAN de esa PC (valor incluido: `192.168.1.82`). Para emulador, cambiar el valor a `10.0.2.2`. Si no hay conexión, la app sigue funcionando con los datos de respaldo y Room.
+4. Para usar el celular con datos móviles o en otra Wi‑Fi, dejar el `backendUrl` de ngrok incluido en el APK. En la PC iniciar MySQL, el microservicio y `ngrok http 8080`; el túnel reutiliza el dominio fijo de la cuenta. Si ngrok o el backend no están disponibles, la app sigue funcionando con los datos de respaldo y Room.
 5. Al abrir cámara o galería, aceptar el permiso solicitado. Si se rechaza, la pantalla muestra un mensaje y no se cierra.
 
 ### 4. Pruebas y cobertura
@@ -153,7 +167,7 @@ cd MCmovilCare
 .\gradlew.bat :app:testDebugUnitTest :app:jacocoTestReport
 ```
 
-Resultados verificados: 14 pruebas del backend y 52 pruebas de la app. La cobertura de la lógica Android (ViewModels, repositorios y mappers) es de **80,9%** de instrucciones, medida por JaCoCo; la cobertura del backend es de **47,9%**. El informe HTML queda en `MCmovilCare/app/build/reports/jacoco/jacocoTestReport/html/index.html`.
+Resultados verificados: 14 pruebas del backend y 52 pruebas de la app. La cobertura de la lógica Android (ViewModels, repositorios y mappers) es de **80,8%** de instrucciones, medida por JaCoCo; la cobertura del backend es de **47,9%**. El informe HTML queda en `MCmovilCare/app/build/reports/jacoco/jacocoTestReport/html/index.html`.
 
 ## APK firmado y keystore
 
@@ -173,7 +187,8 @@ Datos de firma acordados como valores de ejemplo:
 - Certificado: `CN=MCmovil Care, OU=DSY1105, O=Duoc UC, L=Santiago, ST=Region Metropolitana, C=CL`
 - Huella SHA-256 del certificado: `7f7a779c7df7d659e07222bf30ee5c9e4fd05038f38ba54634a329fcec6d5ac0`
 - Firma verificada con el esquema APK Signature Scheme v2
-- Hash SHA-256 del APK actual: `2f9828ebd810b9a7a2ba2f4c2e6c55735f443a1ebcc5b3ec0b1144bde06eb89c`
+- Hash SHA-256 del APK actual: `303b7c3efebb98357fd1ac8ad35fc64c14191231e1c6d011b2c428866c29a20c`
+- El APK incluye compilada la URL pública de ngrok, por lo que el celular no necesita estar en la misma Wi‑Fi de la PC ni escribir una IP.
 - El `packageScope` de R8 excluye `kotlin.**` para no reempaquetar clases internas de Kotlin.
 - `app/proguard-rules.pro` conserva los constructores `(Application)` de `DetalleAtencionViewModel` y `SolicitudViewModel`, que Compose crea por reflexión; sin esta regla el release cerraba la app al abrir “Mis atenciones” o “Solicitar atención”.
 - El release regenerado se instaló y verificó en emulador API 37: abre el detalle de atención, el detalle de equipo con referencia externa electrónica y el formulario de solicitud, sin `FATAL EXCEPTION`.

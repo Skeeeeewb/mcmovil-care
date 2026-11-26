@@ -69,7 +69,7 @@ androidComponents {
                 type = "String",
                 value = "\"${
                     providers.gradleProperty("backendUrl")
-                        .orElse("http://192.168.1.82:8080/api/")
+                        .orElse("https://dwindle-squishier-fetch.ngrok-free.dev/api/")
                         .get()
                 }\"",
                 comment = "URL base del microservicio MCMovil Care"
