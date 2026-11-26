@@ -61,7 +61,7 @@ La migración `1 → 2` agrega `fotoRuta` y `evidenciaRuta` sin borrar los datos
 - Consulta por equipo para atenciones y solicitudes.
 - Lectura y actualización de la decisión de cotización por atención.
 - Validaciones y respuestas `200`, `201`, `204`, `400` y `404`.
-- Datos iniciales de equipos y atenciones cargados desde `data.sql`.
+- Datos iniciales de 3 equipos y 6 atenciones cargados desde `data.sql`; las atenciones `1005` y `1006` incluyen decisiones de ejemplo `ACEPTADA` y `RECHAZADA`.
 
 ## Endpoints utilizados
 
