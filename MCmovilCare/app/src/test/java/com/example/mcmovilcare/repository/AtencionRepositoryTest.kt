@@ -43,7 +43,16 @@ class AtencionRepositoryTest {
 
         val atenciones = AtencionRepository(api).observarAtenciones().first()
 
-        assertEquals(3, atenciones.size)
+        assertEquals(6, atenciones.size)
+    }
+
+    @Test
+    fun `usa respaldo por id de atencion de prueba`() = runTest {
+        coEvery { api.obtenerAtencion(1005) } throws IOException("Sin conexión")
+
+        val atencion = AtencionRepository(api).observarAtencion(1005).first()
+
+        assertEquals("Reparación de conector de carga", atencion?.diagnostico)
     }
 
     @Test

@@ -24,7 +24,7 @@ Aplicación móvil académica para un servicio técnico: consulta de equipos, re
 
 ### Aplicación
 
-- Listado de equipos y atenciones obtenidos desde el microservicio, con respaldo local si el servicio no responde.
+- Listado de equipos y atenciones obtenidos desde el microservicio, con respaldo local de 3 equipos y 6 atenciones si el servicio no responde.
 - Detalle de equipo con marca, modelo y estado; muestra además marca, precio e imagen de un producto de DummyJSON.
 - Formulario de solicitud de atención con la validación original de la app (descripción de al menos 10 caracteres).
 - Cámara con permiso `CAMERA` solicitado en tiempo de ejecución y mensaje claro si se rechaza.
@@ -67,7 +67,7 @@ La migración `1 → 2` agrega `fotoRuta` y `evidenciaRuta` sin borrar los datos
 
 ### Microservicio propio
 
-Base configurable en `MCmovilCare/gradle.properties` mediante `backendUrl`. Valor incluido: `http://192.168.1.92:8080/api/` (IP LAN de la PC para celular físico). Desde el equipo se verifica con `http://localhost:8080/api`; en emulador se puede cambiar el valor a `http://10.0.2.2:8080/api/`. Se genera en `BuildConfig.BACKEND_URL` y lo consume `ApiClient.kt`.
+Base configurable en `MCmovilCare/gradle.properties` mediante `backendUrl`. Valor incluido: `http://192.168.1.82:8080/api/` (IP LAN detectada en la PC para celular físico). Desde el equipo se verifica con `http://localhost:8080/api`; en emulador se puede cambiar el valor a `http://10.0.2.2:8080/api/`. Se genera en `BuildConfig.BACKEND_URL` y lo consume `ApiClient.kt`.
 
 | Método | Ruta | Uso en la app |
 | --- | --- | --- |
@@ -136,7 +136,7 @@ curl http://localhost:8080/api/equipos
 1. Clonar `https://github.com/Skeeeeewb/mcmovil-care.git`.
 2. Abrir la carpeta `MCmovilCare` con Android Studio y sincronizar Gradle.
 3. Ejecutar la configuración `app` en un emulador con API 26 o superior o instalar el APK firmado en el celular (`adb install -r MCmovilCare/app/release/mcmovil-care-release.apk`).
-4. Si el microservicio corre en la PC, el celular debe estar en la misma Wi‑Fi y `backendUrl` debe apuntar a la IP LAN de esa PC (valor incluido: `192.168.1.92`). Para emulador, cambiar el valor a `10.0.2.2`. Si no hay conexión, la app sigue funcionando con los datos de respaldo y Room.
+4. Si el microservicio corre en la PC, el celular debe estar en la misma Wi‑Fi y `backendUrl` debe apuntar a la IP LAN de esa PC (valor incluido: `192.168.1.82`). Para emulador, cambiar el valor a `10.0.2.2`. Si no hay conexión, la app sigue funcionando con los datos de respaldo y Room.
 5. Al abrir cámara o galería, aceptar el permiso solicitado. Si se rechaza, la pantalla muestra un mensaje y no se cierra.
 
 ### 4. Pruebas y cobertura
@@ -151,7 +151,7 @@ cd MCmovilCare
 .\gradlew.bat :app:testDebugUnitTest :app:jacocoTestReport
 ```
 
-Resultados verificados: 14 pruebas del backend y 48 pruebas de la app. La cobertura de la lógica Android (ViewModels, repositorios y mappers) es de **80,3%** de instrucciones, medida por JaCoCo; la cobertura del backend es de **47,9%**. El informe HTML queda en `MCmovilCare/app/build/reports/jacoco/jacocoTestReport/html/index.html`.
+Resultados verificados: 14 pruebas del backend y 49 pruebas de la app. La cobertura de la lógica Android (ViewModels, repositorios y mappers) es de **80,6%** de instrucciones, medida por JaCoCo; la cobertura del backend es de **47,9%**. El informe HTML queda en `MCmovilCare/app/build/reports/jacoco/jacocoTestReport/html/index.html`.
 
 ## APK firmado y keystore
 
@@ -171,7 +171,7 @@ Datos de firma acordados como valores de ejemplo:
 - Certificado: `CN=MCmovil Care, OU=DSY1105, O=Duoc UC, L=Santiago, ST=Region Metropolitana, C=CL`
 - Huella SHA-256 del certificado: `7f7a779c7df7d659e07222bf30ee5c9e4fd05038f38ba54634a329fcec6d5ac0`
 - Firma verificada con el esquema APK Signature Scheme v2
-- Hash SHA-256 del APK actual: `eb49e0a889d09b04fc9ec88537a74b5282ae87c58828809f3af419d1c57aada5`
+- Hash SHA-256 del APK actual: `049ca93015bef2573eb8c1b78126dd2196377fa138e631c057acc8468bc26661`
 - El `packageScope` de R8 excluye `kotlin.**` para no reempaquetar clases internas de Kotlin; el release regenerado se instaló y abrió en un emulador API 37 sin `FATAL EXCEPTION`.
 
 Capturas de evidencia:

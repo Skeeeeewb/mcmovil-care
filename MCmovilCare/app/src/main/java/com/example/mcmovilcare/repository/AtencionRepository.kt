@@ -22,7 +22,10 @@ class AtencionRepository(
         private val ATENCIONES_RESPALDO = listOf(
             Atencion(1001, 1, "En diagnóstico", "Posible falla de almacenamiento", 45000),
             Atencion(1002, 2, "En reparación", "Cambio de pantalla", 85000),
-            Atencion(1003, 3, "Finalizada", "Revisión general completada", 20000)
+            Atencion(1003, 3, "Finalizada", "Revisión general completada", 20000),
+            Atencion(1004, 1, "En diagnóstico", "Revisión de batería", 35000),
+            Atencion(1005, 2, "En reparación", "Reparación de conector de carga", 25000),
+            Atencion(1006, 3, "Finalizada", "Limpieza y mantención preventiva", 15000)
         )
     }
 }
