@@ -14,20 +14,26 @@ class ProductoRepositoryTest {
     private val api = mockk<DummyJsonApi>()
 
     @Test
-    fun `obtiene producto de DummyJSON`() = runTest {
-        coEvery { api.obtenerProducto(1) } returns ProductoDto(
-            "Essence Mascara", "Essence", 9.99, "https://cdn.dummyjson.com/imagen.jpg"
+    fun `obtiene referencia electronica segun el equipo`() = runTest {
+        coEvery { api.obtenerProducto(81) } returns ProductoDto(
+            "Lenovo Yoga 920", "Lenovo", 1099.99, "https://cdn.dummyjson.com/lenovo.jpg"
         )
 
         val producto = ProductoRepository(api).obtenerProducto(1)
 
-        assertEquals("Essence", producto?.marca)
-        assertEquals("https://cdn.dummyjson.com/imagen.jpg", producto?.imagen)
+        assertEquals("Lenovo Yoga 920", producto?.titulo)
+        assertEquals("Lenovo", producto?.marca)
+        assertEquals("https://cdn.dummyjson.com/lenovo.jpg", producto?.imagen)
+    }
+
+    @Test
+    fun `devuelve nulo si el equipo no tiene referencia configurada`() = runTest {
+        assertNull(ProductoRepository(api).obtenerProducto(99))
     }
 
     @Test
     fun `devuelve nulo si falla DummyJSON`() = runTest {
-        coEvery { api.obtenerProducto(1) } throws IOException("Sin conexión")
+        coEvery { api.obtenerProducto(81) } throws IOException("Sin conexión")
 
         assertNull(ProductoRepository(api).obtenerProducto(1))
     }

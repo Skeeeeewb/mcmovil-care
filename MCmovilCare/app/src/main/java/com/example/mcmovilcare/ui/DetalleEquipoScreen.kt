@@ -63,9 +63,10 @@ fun DetalleEquipoScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
-                            text = "Referencia externa (DummyJSON)",
+                            text = "Referencia externa (catálogo)",
                             style = MaterialTheme.typography.titleMedium
                         )
+                        Text(text = producto.titulo)
                         AsyncImage(
                             model = producto.imagen,
                             contentDescription = "Imagen de referencia de ${producto.titulo}",
@@ -76,6 +77,7 @@ fun DetalleEquipoScreen(
                         )
                         Text(text = "Marca: ${producto.marca}")
                         Text(text = "Precio: $${producto.precio}")
+                        Text(text = "Producto de demostración; no es el equipo del taller.")
                     }
                 }
             }

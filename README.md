@@ -1,6 +1,6 @@
 # MCmovil Care — Evaluación Parcial 4 (DSY1105)
 
-Aplicación móvil académica para un servicio técnico: consulta de equipos, registro de solicitudes, seguimiento de atenciones y decisiones sobre cotizaciones. La observación de la interfaz se realiza en tiempo real contra un microservicio Spring Boot propio; la API externa DummyJSON entrega datos de referencia que se muestran en el detalle del equipo.
+Aplicación móvil académica para un servicio técnico: consulta de equipos, registro de solicitudes, seguimiento de atenciones y decisiones sobre cotizaciones. La información del taller se obtiene en tiempo real del microservicio Spring Boot propio. La API externa DummyJSON se usa solo como catálogo de referencia electrónica en el detalle del equipo; no sustituye ni representa los equipos reales del taller.
 
 ## Integrantes
 
@@ -25,7 +25,7 @@ Aplicación móvil académica para un servicio técnico: consulta de equipos, re
 ### Aplicación
 
 - Listado de equipos y atenciones obtenidos desde el microservicio, con respaldo local de 3 equipos y 6 atenciones si el servicio no responde.
-- Detalle de equipo con marca, modelo y estado; muestra además marca, precio e imagen de un producto de DummyJSON.
+- Detalle de equipo con marca, modelo y estado; muestra además un producto electrónico de referencia de DummyJSON, identificado como dato externo y no como parte del taller.
 - Formulario de solicitud de atención con la validación original de la app (descripción de al menos 10 caracteres).
 - Cámara con permiso `CAMERA` solicitado en tiempo de ejecución y mensaje claro si se rechaza.
 - Galería con permiso de imágenes solicitado en tiempo de ejecución (`READ_MEDIA_IMAGES` en API 33+ y `READ_EXTERNAL_STORAGE` en API 32 o inferior).
@@ -104,9 +104,11 @@ Cuerpos JSON:
 
 | Método | Ruta | Dato mostrado |
 | --- | --- | --- |
-| `GET` | `https://dummyjson.com/products/{id}` | Marca, precio e imagen de referencia en `DetalleEquipoScreen` |
+| `GET` | `https://dummyjson.com/products/81` | Lenovo Yoga 920: referencia para el equipo 1 |
+| `GET` | `https://dummyjson.com/products/132` | Samsung Galaxy S8: referencia para el equipo 2 |
+| `GET` | `https://dummyjson.com/products/160` | Samsung Galaxy Tab S8 Plus: referencia para el equipo 3 |
 
-Se usa el identificador del equipo como `id` del producto. No requiere API key y no interfiere con Room ni con el microservicio propio.
+La app muestra título, marca, precio e imagen en una tarjeta separada y etiquetada como “Referencia externa (catálogo)”. La API externa no es la fuente de “Mis equipos” ni de “Mis atenciones”: esos datos vienen del microservicio propio. No requiere API key y no interfiere con Room.
 
 ## Pasos para ejecutar
 
@@ -151,7 +153,7 @@ cd MCmovilCare
 .\gradlew.bat :app:testDebugUnitTest :app:jacocoTestReport
 ```
 
-Resultados verificados: 14 pruebas del backend y 49 pruebas de la app. La cobertura de la lógica Android (ViewModels, repositorios y mappers) es de **80,6%** de instrucciones, medida por JaCoCo; la cobertura del backend es de **47,9%**. El informe HTML queda en `MCmovilCare/app/build/reports/jacoco/jacocoTestReport/html/index.html`.
+Resultados verificados: 14 pruebas del backend y 52 pruebas de la app. La cobertura de la lógica Android (ViewModels, repositorios y mappers) es de **80,9%** de instrucciones, medida por JaCoCo; la cobertura del backend es de **47,9%**. El informe HTML queda en `MCmovilCare/app/build/reports/jacoco/jacocoTestReport/html/index.html`.
 
 ## APK firmado y keystore
 
@@ -171,8 +173,10 @@ Datos de firma acordados como valores de ejemplo:
 - Certificado: `CN=MCmovil Care, OU=DSY1105, O=Duoc UC, L=Santiago, ST=Region Metropolitana, C=CL`
 - Huella SHA-256 del certificado: `7f7a779c7df7d659e07222bf30ee5c9e4fd05038f38ba54634a329fcec6d5ac0`
 - Firma verificada con el esquema APK Signature Scheme v2
-- Hash SHA-256 del APK actual: `049ca93015bef2573eb8c1b78126dd2196377fa138e631c057acc8468bc26661`
-- El `packageScope` de R8 excluye `kotlin.**` para no reempaquetar clases internas de Kotlin; el release regenerado se instaló y abrió en un emulador API 37 sin `FATAL EXCEPTION`.
+- Hash SHA-256 del APK actual: `2f9828ebd810b9a7a2ba2f4c2e6c55735f443a1ebcc5b3ec0b1144bde06eb89c`
+- El `packageScope` de R8 excluye `kotlin.**` para no reempaquetar clases internas de Kotlin.
+- `app/proguard-rules.pro` conserva los constructores `(Application)` de `DetalleAtencionViewModel` y `SolicitudViewModel`, que Compose crea por reflexión; sin esta regla el release cerraba la app al abrir “Mis atenciones” o “Solicitar atención”.
+- El release regenerado se instaló y verificó en emulador API 37: abre el detalle de atención, el detalle de equipo con referencia externa electrónica y el formulario de solicitud, sin `FATAL EXCEPTION`.
 
 Capturas de evidencia:
 

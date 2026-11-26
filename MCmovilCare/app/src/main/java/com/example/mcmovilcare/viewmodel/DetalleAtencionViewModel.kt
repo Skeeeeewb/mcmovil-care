@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.jvm.JvmOverloads
 
 data class DetalleAtencionUiState(
     val atencion: Atencion? = null,
@@ -31,7 +32,7 @@ sealed interface DetalleAtencionUiEvent {
     data object RechazarCotizacion : DetalleAtencionUiEvent
 }
 
-class DetalleAtencionViewModel(
+class DetalleAtencionViewModel @JvmOverloads constructor(
     application: Application,
     private val atencionRepository: AtencionRepository = AtencionRepository(),
     private val decisionRepository: DecisionCotizacionRepository = DecisionCotizacionRepository(

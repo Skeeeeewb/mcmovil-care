@@ -42,7 +42,7 @@ class DetalleEquipoViewModelTest {
             Equipo(1, "Notebook", "Lenovo", "IdeaPad 3", "En diagnóstico")
         )
         coEvery { productoRepository.obtenerProducto(1) } returns Producto(
-            "Essence Mascara", "Essence", 9.99, "https://cdn.dummyjson.com/imagen.jpg"
+            "Lenovo Yoga 920", "Lenovo", 1099.99, "https://cdn.dummyjson.com/lenovo.jpg"
         )
 
         val viewModel = DetalleEquipoViewModel(equipoRepository, productoRepository)
@@ -50,7 +50,8 @@ class DetalleEquipoViewModelTest {
 
         val estado = viewModel.uiState.value
         assertEquals("Notebook", estado.equipo?.nombre)
-        assertEquals("Essence", estado.producto?.marca)
-        assertEquals(9.99, estado.producto?.precio ?: 0.0, 0.01)
+        assertEquals("Lenovo Yoga 920", estado.producto?.titulo)
+        assertEquals("Lenovo", estado.producto?.marca)
+        assertEquals(1099.99, estado.producto?.precio ?: 0.0, 0.01)
     }
 }

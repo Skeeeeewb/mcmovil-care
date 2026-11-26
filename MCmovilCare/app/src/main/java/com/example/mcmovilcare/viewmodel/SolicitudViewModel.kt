@@ -11,6 +11,7 @@ import com.example.mcmovilcare.model.ValidacionSolicitud
 import com.example.mcmovilcare.repository.EquipoRepository
 import com.example.mcmovilcare.repository.FotoRepository
 import com.example.mcmovilcare.repository.SolicitudRepository
+import kotlin.jvm.JvmOverloads
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,7 +43,7 @@ sealed interface SolicitudUiEvent {
     data object Guardar : SolicitudUiEvent
 }
 
-class SolicitudViewModel(
+class SolicitudViewModel @JvmOverloads constructor(
     application: Application,
     private val solicitudRepository: SolicitudRepository = SolicitudRepository(
         AppDatabase.getInstance(application).solicitudDao()

@@ -36,6 +36,10 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("release")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
             optimization {
                 enable = true
                 packageScope = setOf(
@@ -65,7 +69,7 @@ androidComponents {
                 type = "String",
                 value = "\"${
                     providers.gradleProperty("backendUrl")
-                        .orElse("http://192.168.1.92:8080/api/")
+                        .orElse("http://192.168.1.82:8080/api/")
                         .get()
                 }\"",
                 comment = "URL base del microservicio MCMovil Care"
