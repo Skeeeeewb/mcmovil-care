@@ -1,4 +1,4 @@
-﻿Comando: apksigner verify --verbose --print-certs mcmovil-care-release.apk
+Comando: apksigner verify --verbose --print-certs mcmovil-care-release.apk
 Verifies
 Verified using v1 scheme (JAR signing): false
 Verified using v2 scheme (APK Signature Scheme v2): true

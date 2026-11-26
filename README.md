@@ -171,6 +171,8 @@ Datos de firma acordados como valores de ejemplo:
 - Certificado: `CN=MCmovil Care, OU=DSY1105, O=Duoc UC, L=Santiago, ST=Region Metropolitana, C=CL`
 - Huella SHA-256 del certificado: `7f7a779c7df7d659e07222bf30ee5c9e4fd05038f38ba54634a329fcec6d5ac0`
 - Firma verificada con el esquema APK Signature Scheme v2
+- Hash SHA-256 del APK actual: `eb49e0a889d09b04fc9ec88537a74b5282ae87c58828809f3af419d1c57aada5`
+- El `packageScope` de R8 excluye `kotlin.**` para no reempaquetar clases internas de Kotlin; el release regenerado se instaló y abrió en un emulador API 37 sin `FATAL EXCEPTION`.
 
 Capturas de evidencia:
 
